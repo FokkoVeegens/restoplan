@@ -25,7 +25,68 @@ The following prerequisites are required to use this application. Please ensure 
 
 ### Running locally
 
-To run this application locally without the devcontainer, perform the following steps:
+#### Quick Start
+
+1. **Run the setup script:**
+   ```powershell
+   .\start-local.ps1
+   ```
+
+2. **Create the database:**
+   - Open the Cosmos DB Emulator UI: https://localhost:8081/_explorer/index.html
+   - Create a new database named `restoplan` (use all default settings)
+
+3. **Start the services:**
+   
+   **Option A: One-Click F5 Experience (Recommended)**
+   - Press `F5` or go to Run and Debug panel (`Ctrl+Shift+D`)
+   - Select "🚀 Start Full Stack (F5 Ready)" from the dropdown
+   - Click the play button or press `F5`
+   - This will automatically:
+     - Start both API and Web servers
+     - Wait for them to be ready
+     - Open the browser with debugging enabled
+     - Connect to both frontend and backend
+
+   **Option B: Using VS Code Tasks (Manual Control)**
+   - Press `Ctrl+Shift+P`
+   - Type "Tasks: Run Task"
+   - Select "Start API" (this will start the API on port 3100)
+   - Press `Ctrl+Shift+P` again
+   - Type "Tasks: Run Task"
+   - Select "Start Web" (this will start the web frontend on port 5173)
+
+   **Option C: Using Debug Configurations (Advanced)**
+   - **Step 1**: Start the servers using VS Code Tasks (Option B above)
+   - **Step 2**: Use individual debug configurations:
+     - Press `F5` or go to Run and Debug panel (`Ctrl+Shift+D`)
+     - Select from dropdown:
+       - "Debug Web (Browser Only)" - Opens browser with debugging
+       - "Debug API (Process Only)" - Debugs the .NET API
+       - "Debug API + Web (Full Stack)" - Debugs both together
+     - Click the play button
+
+   **Option D: Manual Terminal Commands**
+   ```powershell
+   # Terminal 1 - API
+   cd src/api
+   dotnet run
+
+   # Terminal 2 - Web (new terminal)
+   cd src/web
+   npm run dev
+   ```
+
+#### URLs
+
+- **Web Application:** http://localhost:5173
+- **API:** http://localhost:3100
+- **API Swagger:** http://localhost:3100/swagger
+- **Cosmos DB Emulator UI:** https://localhost:8081/_explorer/index.html
+
+#### Detailed Setup (Manual)
+
+If you prefer to set up manually instead of using the setup script:
 
 1. Ensure the prerequisites as mentioned above are installed
 1. Install the Azure CLI extension for Visual Studio Code
@@ -45,25 +106,72 @@ To run this application locally without the devcontainer, perform the following 
       "AZURE_COSMOS_DATABASE_NAME": "restoplan"
     }
     ```
-1. Set the Cosmos DB key as an environment variable before running the API:
+1. Set the Cosmos DB key using dotnet user-secrets (recommended):
+    ```bash
+    cd src/api
+    dotnet user-secrets set "AZURE_COSMOS_KEY" "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
+    ```
+    
+    Alternatively, you can set it as an environment variable:
     - On Windows (PowerShell):
       ```powershell
-      $env:AZURE_COSMOS_KEY = "{your-cosmos-key}"
+      $env:AZURE_COSMOS_KEY = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
       ```
     - On Linux/macOS:
       ```bash
-      export AZURE_COSMOS_KEY="{your-cosmos-key}"
+      export AZURE_COSMOS_KEY="C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
       ```
-    You can also use a `.env` file or your IDE's environment configuration.
-
-    Alternatively, if your project has a `UserSecretsId` configured, you can use [dotnet user-secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows) to store the Cosmos DB key securely:
-    ```bash
-    dotnet user-secrets set "AZURE_COSMOS_KEY" "{your-cosmos-key}"
-    ```
-    This will store the secret locally for development and is recommended for .NET projects.
 1. Create a new database using the emulator UI with the name `restoplan` (all defaults)
-1. Add `"AZURE_COSMOS_DATABASE_NAME": "restoplan"` to your appSettings.Development.json file
-1. Press `ctrl+shift+p`, type `Tasks: Run Task` and select `Start API and Web` (this is configured in `.vscode/tasks.json`)
+1. Install web dependencies: `cd src/web && npm install`
+1. Build the API: `cd src/api && dotnet build`
+1. Start the services using VS Code tasks or debug configurations
+
+#### Troubleshooting
+
+**Azure Dev CLI Extension Issues**
+- If you get `command 'azure-dev.commands.getDotEnvFilePath' not found` error:
+  - This is normal if you don't have the Azure Developer CLI extension installed
+  - The configurations have been updated to work without this extension
+  - Environment variables are handled via dotnet user-secrets instead
+
+**Cosmos DB Emulator Issues**
+- If the emulator fails to start, try running it as Administrator
+- The emulator can take 1-2 minutes to fully initialize
+- Default emulator key is already configured in user secrets
+
+**API Issues**
+- Make sure the Cosmos DB emulator is running before starting the API
+- The API uses user secrets for the Cosmos DB key (already configured)
+- Check that the `restoplan` database exists in the emulator
+- **Port conflicts**: If you get "address already in use" errors:
+  - Run the "Clean Up Ports" task from VS Code (Ctrl+Shift+P → Tasks: Run Task → Clean Up Ports)
+  - Or run the cleanup script: `.\start-local.ps1` (includes automatic port cleanup)
+  - The API now uses HTTP only (port 3100) for local development to avoid HTTPS certificate issues
+
+**Web Frontend Issues**
+- Make sure npm dependencies are installed: `cd src/web && npm install`
+- The web frontend expects the API to be running on port 3100
+- **Important**: When using debug configurations, start the servers with tasks first
+- If you get "localhost refused to connect" error, run the "Start Web" task first
+
+**Debug Configuration Issues**
+- **F5 One-Click Experience**: Use "🚀 Start Full Stack (F5 Ready)" for the simplest experience
+- The individual debug configurations now automatically start their respective servers
+- The "Debug API + Web (Full Stack)" compound configuration works after servers are running
+- If tasks fail to start servers, check that dependencies are installed (npm install, dotnet build)
+- Background tasks (servers) may take a few seconds to start - VS Code will wait for them
+
+#### Environment Variables
+
+The following are already configured for local development:
+
+**API (appsettings.Development.json)**
+- `AZURE_COSMOS_ENDPOINT`: https://localhost:8081
+- `AZURE_COSMOS_DATABASE_NAME`: restoplan
+- `AZURE_COSMOS_KEY`: Set via dotnet user-secrets
+
+**Web Frontend**
+- `VITE_API_BASE_URL`: http://localhost:3100 (set via task configuration)
 
 Source: https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/debug?pivots=ide-vs-code
 
@@ -102,6 +210,14 @@ This template provisions resources to an Azure subscription that you will select
 ### Application Code
 
 This template is structured to follow the [Azure Developer CLI](https://aka.ms/azure-dev/overview). You can learn more about `azd` architecture in [the official documentation](https://learn.microsoft.com/azure/developer/azure-developer-cli/make-azd-compatible?pivots=azd-create#understand-the-azd-architecture).
+
+#### Project Structure
+
+- `src/api/` - C# .NET 8 Web API
+- `src/web/` - React + Vite frontend  
+- `infra/` - Azure Bicep infrastructure templates
+- `.vscode/` - VS Code configuration (tasks, launch configs)
+- `start-local.ps1` - PowerShell script for local development setup
 
 ### Next Steps
 

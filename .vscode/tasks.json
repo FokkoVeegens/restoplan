@@ -3,22 +3,38 @@
     "tasks": [
         {
             "label": "Start API",
-            "type": "dotenv",
-            "targetTasks": "API dotnet run",
-            "file": "${input:dotEnvFilePath}"
-        },
-        {
-            "label": "API dotnet run",
-            "detail": "Helper task--use 'Start API' task to ensure environment is set up correctly",
             "type": "shell",
             "command": "dotnet run",
             "options": {
                 "cwd": "${workspaceFolder}/src/api/"
             },
+            "group": "build",
             "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
                 "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": false
             },
-            "problemMatcher": []
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "dotnet",
+                "pattern": [
+                    {
+                        "regexp": "^(.*)$",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^.*Building.*$",
+                    "endsPattern": "^.*Application started.*$|^.*Now listening on.*$"
+                }
+            },
+            "dependsOn": "Build API"
         },
         {
             "label": "Build API",
@@ -30,44 +46,16 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Watch API",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "run",
-                "--project",
-                "${workspaceFolder}/src/api/Todo.Api.csproj"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-
-        {
-            "label": "Start Web",
-            "type": "dotenv",
-            "targetTasks": [
-                "Restore Web",
-                "Web npm start"
-            ],
-            "file": "${input:dotEnvFilePath}"
-        },
-        {
-            "label": "Restore Web",
-            "type": "shell",
-            "command": "azd restore web",
+            "group": "build",
             "presentation": {
                 "reveal": "silent"
             },
-            "problemMatcher": []
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Web npm start",
-            "detail": "Helper task--use 'Start Web' task to ensure environment is set up correctly",
+            "label": "Start Web",
             "type": "shell",
-            "command": "npx -y cross-env VITE_APPLICATIONINSIGHTS_CONNECTION_STRING=\"$APPLICATIONINSIGHTS_CONNECTION_STRING\" npm run dev",
+            "command": "npm run dev",
             "options": {
                 "cwd": "${workspaceFolder}/src/web/",
                 "env": {
@@ -75,27 +63,72 @@
                     "BROWSER": "none"
                 }
             },
+            "group": "build",
             "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
                 "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "vite",
+                "pattern": [
+                    {
+                        "regexp": "^(.*)$",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*VITE.*",
+                    "endsPattern": ".*ready in.*|.*Local:.*http://localhost.*"
+                }
+            },
+            "dependsOn": "Install Web Dependencies"
+        },
+        {
+            "label": "Install Web Dependencies",
+            "type": "shell",
+            "command": "npm install",
+            "options": {
+                "cwd": "${workspaceFolder}/src/web/"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
             },
             "problemMatcher": []
         },
-
         {
             "label": "Start API and Web",
-            "dependsOn":[
+            "dependsOn": [
                 "Start API",
                 "Start Web"
             ],
+            "dependsOrder": "parallel",
             "problemMatcher": []
-        }
-    ],
-
-    "inputs": [
+        },
         {
-            "id": "dotEnvFilePath",
-            "type": "command",
-            "command": "azure-dev.commands.getDotEnvFilePath"
+            "label": "Clean Up Ports",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "$ports = @(3100, 3101, 3102, 5173); foreach ($port in $ports) { try { $connections = netstat -ano | Select-String \":$port \"; if ($connections) { Write-Host \"Cleaning port $port...\"; $connections | ForEach-Object { $line = $_.Line; if ($line -match \"\\s+(\\d+)$\") { $processId = $matches[1]; try { Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue; Write-Host \"Stopped process $processId\" } catch { } } } } } catch { } }; Write-Host \"Port cleanup complete.\""
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
         }
     ]
 }

@@ -2,47 +2,48 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Web",
+            "name": "Debug Web (Browser Only)",
             "request": "launch",
             "type": "msedge",
             "webRoot": "${workspaceFolder}/src/web/src",
             "url": "http://localhost:5173",
+            "preLaunchTask": "Start Web",
             "sourceMapPathOverrides": {
                 "webpack:///src/*": "${webRoot}/*"
-            },
+            }
         },
 
         {
-            // Use IntelliSense to find out which attributes exist for C# debugging
-            // Use hover for the description of the existing attributes
-            // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": "Debug API",
+            "name": "Debug API (Process Only)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "Build API",
-            // If you have changed target frameworks, make sure to update the program path.
+            "preLaunchTask": "Start API",
             "program": "${workspaceFolder}/src/api/bin/Debug/net8.0/Todo.Api.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/api",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "envFile": "${input:dotEnvFilePath}"
+            }
         },
 
         {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
-        }
-    ],
+        },
 
-    "inputs": [
         {
-            "id": "dotEnvFilePath",
-            "type": "command",
-            "command": "azure-dev.commands.getDotEnvFilePath"
+            "name": "🚀 Start Full Stack (F5 Ready)",
+            "request": "launch",
+            "type": "chrome",
+            "runtimeExecutable": "C:\\Users\\${env:USERNAME}\\AppData\\Local\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+            "webRoot": "${workspaceFolder}/src/web/src",
+            "url": "http://localhost:5173",
+            "preLaunchTask": "Start API and Web",
+            "sourceMapPathOverrides": {
+                "webpack:///src/*": "${webRoot}/*"
+            }
         }
     ]
 }

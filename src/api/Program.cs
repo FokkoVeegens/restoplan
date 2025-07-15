@@ -7,14 +7,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ListsRepository>();
 var cosmosEndpoint = builder.Configuration["AZURE_COSMOS_ENDPOINT"];
-var cosmosKey = Environment.GetEnvironmentVariable("AZURE_COSMOS_KEY");
-builder.Services.AddSingleton(_ => new CosmosClient(cosmosEndpoint, cosmosKey, new CosmosClientOptions
+var cosmosKey = builder.Configuration["AZURE_COSMOS_KEY"];
+var cosmosClient = new CosmosClient(cosmosEndpoint, cosmosKey, new CosmosClientOptions
 {
     SerializerOptions = new CosmosSerializationOptions
     {
         PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
     }
-}));
+});
+
+// Ensure database and containers exist
+var databaseName = builder.Configuration["AZURE_COSMOS_DATABASE_NAME"];
+await cosmosClient.CreateDatabaseIfNotExistsAsync(databaseName);
+var database = cosmosClient.GetDatabase(databaseName);
+await database.CreateContainerIfNotExistsAsync("TodoList", "/id");
+await database.CreateContainerIfNotExistsAsync("TodoItem", "/listId");
+
+builder.Services.AddSingleton(_ => cosmosClient);
 builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();

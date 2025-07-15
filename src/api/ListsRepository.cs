@@ -64,12 +64,12 @@ public class ListsRepository
     public async Task AddListItemAsync(TodoItem item)
     {
         item.Id = Guid.NewGuid().ToString("N");
-        await _itemsCollection.UpsertItemAsync(item, new PartitionKey(item.Id));
+        await _itemsCollection.UpsertItemAsync(item, new PartitionKey(item.ListId));
     }
 
     public async Task<TodoItem?> GetListItemAsync(string listId, string itemId)
     {
-        var response = await _itemsCollection.ReadItemAsync<TodoItem>(itemId, new PartitionKey(itemId));
+        var response = await _itemsCollection.ReadItemAsync<TodoItem>(itemId, new PartitionKey(listId));
         if (response?.Resource.ListId != listId)
         {
             return null;
@@ -79,12 +79,12 @@ public class ListsRepository
 
     public async Task DeleteListItemAsync(string listId, string itemId)
     {
-        await _itemsCollection.DeleteItemAsync<TodoItem>(itemId, new PartitionKey(itemId));
+        await _itemsCollection.DeleteItemAsync<TodoItem>(itemId, new PartitionKey(listId));
     }
 
     public async Task UpdateListItem(TodoItem existingItem)
     {
-        await _itemsCollection.ReplaceItemAsync(existingItem, existingItem.Id, new PartitionKey(existingItem.Id));
+        await _itemsCollection.ReplaceItemAsync(existingItem, existingItem.Id, new PartitionKey(existingItem.ListId));
     }
 
     private async Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, int? skip, int? batchSize)
