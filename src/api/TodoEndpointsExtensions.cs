@@ -94,7 +94,8 @@ namespace SimpleTodo.Api
                 Name = item.name,
                 Description = item.description,
                 State = item.state,
-                CreatedDate = DateTimeOffset.UtcNow
+                CreatedDate = DateTimeOffset.UtcNow,
+                StartDate = item.startDate
             };
 
             await repository.AddListItemAsync(newItem);
@@ -127,6 +128,7 @@ namespace SimpleTodo.Api
             existingItem.CompletedDate = item.completedDate;
             existingItem.DueDate = item.dueDate;
             existingItem.State = item.state;
+            existingItem.StartDate = item.startDate;
             existingItem.UpdatedDate = DateTimeOffset.UtcNow;
 
             await repository.UpdateListItem(existingItem);
@@ -158,5 +160,5 @@ namespace SimpleTodo.Api
     }
 
     public record CreateUpdateTodoList(string name, string? description = null);
-    public record CreateUpdateTodoItem(string name, string state, DateTimeOffset? dueDate, DateTimeOffset? completedDate, string? description = null);
+public record CreateUpdateTodoItem(string name, string state, DateTimeOffset? dueDate, DateTimeOffset? completedDate, DateTimeOffset? startDate = null, string? description = null);
 }

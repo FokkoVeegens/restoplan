@@ -15,6 +15,7 @@ public class TodoItem
     public string State { get; set; } = "todo";
     public DateTimeOffset? DueDate { get; set; }
     public DateTimeOffset? CompletedDate { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
     public DateTimeOffset? CreatedDate { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? UpdatedDate { get; set; }
 }
