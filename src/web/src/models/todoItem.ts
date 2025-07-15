@@ -12,6 +12,7 @@ export interface TodoItem {
     description?: string
     dueDate?: Date
     completedDate?:Date
+    startDate?: Date
     createdDate?: Date
     updatedDate?: Date
 }

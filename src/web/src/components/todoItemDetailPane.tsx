@@ -13,12 +13,14 @@ export const TodoItemDetailPane: FC<TodoItemDetailPaneProps> = (props: TodoItemD
     const [name, setName] = useState(props.item?.name || '');
     const [description, setDescription] = useState(props.item?.description);
     const [dueDate, setDueDate] = useState(props.item?.dueDate);
+    const [startDate, setStartDate] = useState(props.item?.startDate);
     const [state, setState] = useState(props.item?.state || TodoItemState.Todo);
 
     useEffect(() => {
         setName(props.item?.name || '');
         setDescription(props.item?.description);
         setDueDate(props.item?.dueDate ? new Date(props.item?.dueDate) : undefined);
+        setStartDate(props.item?.startDate ? new Date(props.item?.startDate) : undefined);
         setState(props.item?.state || TodoItemState.Todo);
     }, [props.item]);
 
@@ -35,6 +37,7 @@ export const TodoItemDetailPane: FC<TodoItemDetailPaneProps> = (props: TodoItemD
             name: name,
             description: description,
             dueDate: dueDate,
+            startDate: startDate,
             state: state,
         };
 
@@ -55,6 +58,10 @@ export const TodoItemDetailPane: FC<TodoItemDetailPaneProps> = (props: TodoItemD
         setDueDate(date || undefined);
     }
 
+    const onStartDateChange = (date: Date | null | undefined) => {
+        setStartDate(date || undefined);
+    }
+
     const todoStateOptions: IDropdownOption[] = [
         { key: TodoItemState.Todo, text: 'To Do' },
         { key: TodoItemState.InProgress, text: 'In Progress' },
@@ -73,6 +80,7 @@ export const TodoItemDetailPane: FC<TodoItemDetailPaneProps> = (props: TodoItemD
                         <TextField label="Name" placeholder="Item name" required value={name} onChange={(_e, value) => setName(value || '')} />
                         <TextField label="Description" placeholder="Item description" multiline size={20} value={description || ''} onChange={(_e, value) => setDescription(value)} />
                         <Dropdown label="State" options={todoStateOptions} required selectedKey={state} onChange={onStateChange} />
+                        <DatePicker label="Start Date" placeholder="Start date" value={startDate} onSelectDate={onStartDateChange} />
                         <DatePicker label="Due Date" placeholder="Due date" value={dueDate} onSelectDate={onDueDateChange} />
                     </Stack.Item>
                     <Stack.Item tokens={stackItemMargin}>
