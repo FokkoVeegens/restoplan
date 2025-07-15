@@ -6,7 +6,7 @@
             "request": "launch",
             "type": "msedge",
             "webRoot": "${workspaceFolder}/src/web/src",
-            "url": "http://localhost:3000",
+            "url": "http://localhost:5173",
             "sourceMapPathOverrides": {
                 "webpack:///src/*": "${webRoot}/*"
             },

@@ -6,7 +6,9 @@ var credential = new DefaultAzureCredential();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ListsRepository>();
-builder.Services.AddSingleton(_ => new CosmosClient(builder.Configuration["AZURE_COSMOS_ENDPOINT"], credential, new CosmosClientOptions()
+var cosmosEndpoint = builder.Configuration["AZURE_COSMOS_ENDPOINT"];
+var cosmosKey = Environment.GetEnvironmentVariable("AZURE_COSMOS_KEY");
+builder.Services.AddSingleton(_ => new CosmosClient(cosmosEndpoint, cosmosKey, new CosmosClientOptions
 {
     SerializerOptions = new CosmosSerializationOptions
     {

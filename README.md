@@ -1,24 +1,3 @@
----
-page_type: sample
-languages:
-- azdeveloper
-- aspx-csharp
-- csharp
-- bicep
-- typescript
-- html
-products:
-- azure
-- azure-cosmos-db
-- azure-app-service
-- azure-monitor
-- azure-pipelines
-- aspnet-core
-urlFragment: todo-csharp-cosmos-sql
-name: React Web App with C# API and Cosmos DB for NoSQL on Azure
-description: A complete ToDo app with C# API and Azure Cosmos DB (NoSQL) for storage. Uses Azure Developer CLI (azd) to build, deploy, and monitor
----
-<!-- YAML front-matter schema: https://review.learn.microsoft.com/en-us/help/contribute/samples/process/onboarding?branch=main#supported-metadata-fields-for-readmemd -->
 
 # React Web App with C# API and Cosmos DB for NoSQL on Azure
 
@@ -42,6 +21,51 @@ The following prerequisites are required to use this application. Please ensure 
 - [Azure Developer CLI](https://aka.ms/azd-install)
 - [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) - for the API backend
 - [Node.js with npm (18.17.1+)](https://nodejs.org/) - for the Web frontend
+- [Azure Cosmos DB emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-develop-emulator?tabs=windows%2Ccsharp&pivots=api-mongodb)
+
+### Running locally
+
+To run this application locally without the devcontainer, perform the following steps:
+
+1. Ensure the prerequisites as mentioned above are installed
+1. Install the Azure CLI extension for Visual Studio Code
+1. Clone this repository
+1. Start the Cosmos DB emulator: `. "C:\Program Files\Azure Cosmos DB Emulator\Microsoft.Azure.Cosmos.Emulator.exe" /EnableMongoDbEndpoint=4.0 /MongoPort=65200`
+1. Wait until the browser pops up with the emulator UI (https://localhost:8081/_explorer/index.html)
+1. Ensure your `appsettings.Development.json` file looks like this (note the key is no longer present):
+    ```json
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.AspNetCore": "Warning"
+        }
+      },
+      "AZURE_COSMOS_ENDPOINT": "https://localhost:8081",
+      "AZURE_COSMOS_DATABASE_NAME": "restoplan"
+    }
+    ```
+1. Set the Cosmos DB key as an environment variable before running the API:
+    - On Windows (PowerShell):
+      ```powershell
+      $env:AZURE_COSMOS_KEY = "{your-cosmos-key}"
+      ```
+    - On Linux/macOS:
+      ```bash
+      export AZURE_COSMOS_KEY="{your-cosmos-key}"
+      ```
+    You can also use a `.env` file or your IDE's environment configuration.
+
+    Alternatively, if your project has a `UserSecretsId` configured, you can use [dotnet user-secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows) to store the Cosmos DB key securely:
+    ```bash
+    dotnet user-secrets set "AZURE_COSMOS_KEY" "{your-cosmos-key}"
+    ```
+    This will store the secret locally for development and is recommended for .NET projects.
+1. Create a new database using the emulator UI with the name `restoplan` (all defaults)
+1. Add `"AZURE_COSMOS_DATABASE_NAME": "restoplan"` to your appSettings.Development.json file
+1. Press `ctrl+shift+p`, type `Tasks: Run Task` and select `Start API and Web` (this is configured in `.vscode/tasks.json`)
+
+Source: https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/debug?pivots=ide-vs-code
 
 ### Quickstart
 To learn how to get started with any template, follow the steps in [this quickstart](https://learn.microsoft.com/azure/developer/azure-developer-cli/get-started?tabs=localinstall&pivots=programming-language-csharp) with this template (`Azure-Samples/todo-csharp-cosmos-sql`).
