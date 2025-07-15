@@ -21,6 +21,7 @@ interface TodoDisplayItem extends IObjectWithKey {
     name: string
     state: TodoItemState
     description?: string
+    startDate: Date | string
     dueDate: Date | string
     completedDate: Date | string
     data: TodoItem
@@ -40,6 +41,7 @@ const createListItems = (items: TodoItem[]): TodoDisplayItem[] => {
     return items.map(item => ({
         ...item,
         key: item.id,
+        startDate: item.startDate ? new Date(item.startDate).toDateString() : 'None',
         dueDate: item.dueDate ? new Date(item.dueDate).toDateString() : 'None',
         completedDate: item.completedDate ? new Date(item.completedDate).toDateString() : 'N/A',
         data: item
@@ -153,6 +155,7 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
 
     const columns: IColumn[] = [
         { key: 'name', name: 'Name', fieldName: 'name', minWidth: 100 },
+        { key: 'startDate', name: 'Start', fieldName: 'startDate', minWidth: 100 },
         { key: 'dueDate', name: 'Due', fieldName: 'dueDate', minWidth: 100 },
         { key: 'completedDate', name: 'Completed', fieldName: 'completedDate', minWidth: 100 },
     ];

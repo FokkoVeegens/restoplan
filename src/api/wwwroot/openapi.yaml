@@ -32,6 +32,9 @@ components:
         completedDate:
           type: string
           format: date-time
+        startDate:
+          type: string
+          format: date-time
     TodoList:
       type: object
       required:
