@@ -24,7 +24,7 @@ module api '../core/host/appservice.bicep' = {
     appSettings: appSettings
     keyVaultName: keyVaultName
     runtimeName: 'dotnetcore'
-    runtimeVersion: '8.0'
+    runtimeVersion: '9.0'
     scmDoBuildDuringDeployment: false
   }
 }
