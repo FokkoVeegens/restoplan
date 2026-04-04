@@ -160,5 +160,5 @@ namespace SimpleTodo.Api
     }
 
     public record CreateUpdateTodoList(string name, string? description = null);
-public record CreateUpdateTodoItem(string name, string state, DateTimeOffset? dueDate, DateTimeOffset? completedDate, DateTimeOffset? startDate = null, string? description = null);
+    public record CreateUpdateTodoItem(string name, string state, DateTimeOffset? dueDate, DateTimeOffset? completedDate, DateTimeOffset? startDate = null, string? description = null);
 }
