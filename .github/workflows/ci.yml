@@ -123,6 +123,20 @@ jobs:
             -p 10251-10255:10251-10255 \
             mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
 
+      - name: Diagnose Cosmos DB Emulator key
+        if: vars.REACT_APP_WEB_BASE_URL == ''
+        run: |
+          echo "=== Waiting for HTTP server to start ==="
+          timeout 120 bash -c 'until curl -sk https://localhost:8081/_explorer/emulator.pem 2>/dev/null | grep -q "CERTIFICATE"; do sleep 5; done'
+          echo "=== Container environment variables ==="
+          docker inspect cosmos-emulator | python3 -c "import sys,json; d=json.load(sys.stdin)[0]; [print(e) for e in d['Config']['Env']]"
+          echo "=== Root endpoint (no auth) ==="
+          curl -sk https://localhost:8081/ 2>&1 | head -5 || true
+          echo "=== Explorer quickstart (shows primary key) ==="
+          curl -sk "https://localhost:8081/_explorer/quickstart.html" 2>&1 | python3 -c "import sys,re; body=sys.stdin.read(); m=re.search(r'accountKey[^\"]*\"([^\"]{40,})', body); print(m.group(0) if m else 'Not found - page length ' + str(len(body))); print(body[:2000])" || true
+          echo "=== Full Docker logs ==="
+          docker logs cosmos-emulator 2>&1
+
       - name: Wait for Cosmos DB Emulator
         if: vars.REACT_APP_WEB_BASE_URL == ''
         run: |
