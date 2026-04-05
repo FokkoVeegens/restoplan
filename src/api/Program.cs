@@ -26,6 +26,9 @@ if (Uri.TryCreate(cosmosEndpoint, UriKind.Absolute, out var cosmosUri) && cosmos
         ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
     });
     cosmosClientOptions.ConnectionMode = ConnectionMode.Gateway;
+    // Skip account-metadata discovery (GET /) which the emulator rejects; go directly
+    // to data-plane operations.  Safe for the emulator; has no effect in production.
+    cosmosClientOptions.LimitToEndpoint = true;
 }
 
 var cosmosClient = new CosmosClient(cosmosEndpoint, cosmosKey, cosmosClientOptions);

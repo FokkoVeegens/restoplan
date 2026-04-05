@@ -139,7 +139,8 @@ jobs:
           def make_auth(date_str):
               payload = f"get\ndbs\n\n{date_str.lower()}\n\n"
               sig = base64.b64encode(hmac.new(KEY, payload.encode(), hashlib.sha256).digest()).decode()
-              return "type%3dmaster%26ver%3d1.0%26sig%3d" + urllib.parse.quote(sig)
+              # safe='' encodes ALL special chars (/, +, =) to match C# Uri.EscapeDataString
+              return "type%3dmaster%26ver%3d1.0%26sig%3d" + urllib.parse.quote(sig, safe="")
 
           ctx = ssl.create_default_context()
           ctx.check_hostname = False
