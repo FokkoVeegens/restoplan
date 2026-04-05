@@ -136,7 +136,8 @@ jobs:
         run: dotnet ./publish/api/Todo.Api.dll &
         env:
           ASPNETCORE_URLS: http://localhost:3100
-          ASPNETCORE_ENVIRONMENT: Development
+          AZURE_COSMOS_ENDPOINT: https://localhost:8081
+          AZURE_COSMOS_DATABASE_NAME: restoplan
           # Well-known public key for the Azure Cosmos DB emulator - not a secret
           AZURE_COSMOS_KEY: C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b6m4TLI3Te1lclOcGcmgm6M2Yw==
 
