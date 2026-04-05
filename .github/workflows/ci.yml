@@ -126,11 +126,48 @@ jobs:
       - name: Wait for Cosmos DB Emulator
         if: vars.REACT_APP_WEB_BASE_URL == ''
         run: |
-          echo "Waiting for Cosmos DB emulator to be ready..."
-          # Wait until the emulator certificate endpoint responds - this is only available
-          # once the Cosmos DB service is fully initialized (not just the HTTP proxy).
-          timeout 120 bash -c 'until curl -sk https://localhost:8081/_explorer/emulator.pem 2>/dev/null | grep -q "CERTIFICATE"; do sleep 5; done'
-          echo "Cosmos DB emulator is ready"
+          echo "Waiting for Cosmos DB emulator to accept authenticated requests..."
+          # Poll until a real authenticated GET /dbs request succeeds (HTTP 200).
+          # This is the only reliable signal that the emulator is fully ready,
+          # because the cert/HTTP endpoint becomes available well before the
+          # auth system is initialized.
+          python3 << 'PYEOF'
+          import hmac, hashlib, base64, urllib.request, ssl, email.utils, urllib.parse, time, sys
+
+          KEY = base64.b64decode("C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b6m4TLI3Te1lclOcGcmgm6M2Yw==")
+
+          def make_auth(date_str):
+              payload = f"get\ndbs\n\n{date_str.lower()}\n\n"
+              sig = base64.b64encode(hmac.new(KEY, payload.encode(), hashlib.sha256).digest()).decode()
+              return "type%3dmaster%26ver%3d1.0%26sig%3d" + urllib.parse.quote(sig)
+
+          ctx = ssl.create_default_context()
+          ctx.check_hostname = False
+          ctx.verify_mode = ssl.CERT_NONE
+
+          for i in range(36):  # up to 180 seconds
+              try:
+                  date_str = email.utils.formatdate(usegmt=True)
+                  req = urllib.request.Request(
+                      "https://localhost:8081/dbs",
+                      headers={"Authorization": make_auth(date_str), "x-ms-date": date_str, "x-ms-version": "2018-12-31"}
+                  )
+                  with urllib.request.urlopen(req, context=ctx) as r:
+                      print(f"Cosmos DB emulator is ready (HTTP {r.status})")
+                      sys.exit(0)
+              except urllib.error.HTTPError as e:
+                  body = e.read().decode("utf-8", errors="replace")[:120]
+                  print(f"Attempt {i+1}/36: HTTP {e.code} - {body}")
+              except Exception as e:
+                  print(f"Attempt {i+1}/36: {type(e).__name__}: {e}")
+              time.sleep(5)
+
+          print("ERROR: Cosmos DB emulator did not become ready in 180 s")
+          print("Docker logs:")
+          import subprocess
+          subprocess.run(["docker", "logs", "--tail", "50", "cosmos-emulator"])
+          sys.exit(1)
+          PYEOF
 
       - name: Start backend API
         if: vars.REACT_APP_WEB_BASE_URL == ''
