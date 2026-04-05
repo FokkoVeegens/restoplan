@@ -8,13 +8,27 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ListsRepository>();
 var cosmosEndpoint = builder.Configuration["AZURE_COSMOS_ENDPOINT"];
 var cosmosKey = builder.Configuration["AZURE_COSMOS_KEY"];
-var cosmosClient = new CosmosClient(cosmosEndpoint, cosmosKey, new CosmosClientOptions
+var cosmosClientOptions = new CosmosClientOptions
 {
     SerializerOptions = new CosmosSerializationOptions
     {
         PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
     }
-});
+};
+
+// Allow the self-signed certificate used by the Azure Cosmos DB local emulator.
+// The CosmosClient (and its internal HttpClient) is registered as a singleton and
+// lives for the lifetime of the application, so disposal is managed by the host shutdown.
+if (Uri.TryCreate(cosmosEndpoint, UriKind.Absolute, out var cosmosUri) && cosmosUri.IsLoopback)
+{
+    cosmosClientOptions.HttpClientFactory = () => new HttpClient(new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    });
+    cosmosClientOptions.ConnectionMode = ConnectionMode.Gateway;
+}
+
+var cosmosClient = new CosmosClient(cosmosEndpoint, cosmosKey, cosmosClientOptions);
 
 // Ensure database and containers exist
 var databaseName = builder.Configuration["AZURE_COSMOS_DATABASE_NAME"];
