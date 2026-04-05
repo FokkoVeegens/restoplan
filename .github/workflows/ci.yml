@@ -78,9 +78,10 @@ jobs:
     name: UI Tests
     runs-on: ubuntu-latest
     needs: [frontend]
+    if: vars.REACT_APP_WEB_BASE_URL != ''
     env:
       # Set REACT_APP_WEB_BASE_URL as a repository variable to point Playwright
-      # at a deployed environment. Defaults to http://localhost:3000 if not set.
+      # at a deployed environment. If not set, this job is skipped.
       REACT_APP_WEB_BASE_URL: ${{ vars.REACT_APP_WEB_BASE_URL }}
     steps:
       - name: Checkout
