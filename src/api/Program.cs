@@ -37,7 +37,7 @@ var cosmosClient = new CosmosClient(cosmosEndpoint, cosmosKey, cosmosClientOptio
 // For loopback (emulator) connections the service may still be initializing even
 // after the health check passes, so retry a few times before giving up.
 var databaseName = builder.Configuration["AZURE_COSMOS_DATABASE_NAME"];
-var maxInitAttempts = cosmosUri?.IsLoopback == true ? 10 : 1;
+var maxInitAttempts = cosmosUri?.IsLoopback == true ? 3 : 1;
 for (var attempt = 1; attempt <= maxInitAttempts; attempt++)
 {
     try
