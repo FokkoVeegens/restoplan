@@ -134,7 +134,9 @@ jobs:
 
       - name: Start backend API
         if: vars.REACT_APP_WEB_BASE_URL == ''
-        run: dotnet ./publish/api/Todo.Api.dll &
+        # Redirect output to a file so the process is not killed by SIGPIPE when
+        # GitHub Actions closes the step's output pipe after the shell exits.
+        run: dotnet ./publish/api/Todo.Api.dll > /tmp/api.log 2>&1 &
         env:
           ASPNETCORE_URLS: http://localhost:3100
           AZURE_COSMOS_ENDPOINT: https://localhost:8081
@@ -144,13 +146,14 @@ jobs:
 
       - name: Serve frontend
         if: vars.REACT_APP_WEB_BASE_URL == ''
-        run: npx serve@latest -l 3000 -s ./publish/web &
+        run: npx serve@latest -l 3000 -s ./publish/web > /tmp/web.log 2>&1 &
 
       - name: Wait for services to be ready
         if: vars.REACT_APP_WEB_BASE_URL == ''
         run: |
-          echo "Waiting for backend API..."
-          timeout 60 bash -c 'until curl -s http://localhost:3100/lists > /dev/null 2>&1; do sleep 2; done'
+          echo "Waiting for backend API (tailing /tmp/api.log for diagnostics)..."
+          timeout 120 bash -c 'until curl -s http://localhost:3100/lists > /dev/null 2>&1; do sleep 2; done' || \
+            { echo "Backend did not start. Last log:"; tail -50 /tmp/api.log; exit 1; }
           echo "Waiting for frontend..."
           timeout 30 bash -c 'until curl -s http://localhost:3000 > /dev/null 2>&1; do sleep 2; done'
           echo "All services ready"
