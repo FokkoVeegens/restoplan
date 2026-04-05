@@ -30,12 +30,27 @@ if (Uri.TryCreate(cosmosEndpoint, UriKind.Absolute, out var cosmosUri) && cosmos
 
 var cosmosClient = new CosmosClient(cosmosEndpoint, cosmosKey, cosmosClientOptions);
 
-// Ensure database and containers exist
+// Ensure database and containers exist.
+// For loopback (emulator) connections the service may still be initializing even
+// after the health check passes, so retry a few times before giving up.
 var databaseName = builder.Configuration["AZURE_COSMOS_DATABASE_NAME"];
-await cosmosClient.CreateDatabaseIfNotExistsAsync(databaseName);
-var database = cosmosClient.GetDatabase(databaseName);
-await database.CreateContainerIfNotExistsAsync("TodoList", "/id");
-await database.CreateContainerIfNotExistsAsync("TodoItem", "/listId");
+var maxInitAttempts = cosmosUri?.IsLoopback == true ? 10 : 1;
+for (var attempt = 1; attempt <= maxInitAttempts; attempt++)
+{
+    try
+    {
+        await cosmosClient.CreateDatabaseIfNotExistsAsync(databaseName);
+        var database = cosmosClient.GetDatabase(databaseName);
+        await database.CreateContainerIfNotExistsAsync("TodoList", "/id");
+        await database.CreateContainerIfNotExistsAsync("TodoItem", "/listId");
+        break;
+    }
+    catch (Exception) when (attempt < maxInitAttempts)
+    {
+        Console.Error.WriteLine($"Cosmos DB not ready (attempt {attempt}/{maxInitAttempts}), retrying in 5s...");
+        await Task.Delay(5000);
+    }
+}
 
 builder.Services.AddSingleton(_ => cosmosClient);
 builder.Services.AddCors();
