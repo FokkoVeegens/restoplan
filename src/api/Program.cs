@@ -57,7 +57,12 @@ for (var attempt = 1; attempt <= maxInitAttempts; attempt++)
 
 builder.Services.AddSingleton(_ => cosmosClient);
 builder.Services.AddCors();
-builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
+// Only register Application Insights when a connection string is available; otherwise
+// the SDK throws a DI exception at startup (e.g. in local/CI environments without telemetry).
+if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
+{
+    builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
+}
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var app = builder.Build();
