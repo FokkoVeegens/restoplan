@@ -38,7 +38,7 @@ There are no guaranteed response windows or formal SLAs.
 
 The following are in scope for security reports:
 
-- **API** (`src/api`): C# .NET 8 Web API — injection attacks, insecure deserialization, sensitive data exposure
+- **API** (`src/api`): C# .NET 9 Web API — injection attacks, insecure deserialization, sensitive data exposure
 - **Web frontend** (`src/web`): React + Vite app — XSS, insecure dependencies, exposed secrets
 - **Infrastructure** (`infra`): Azure Bicep templates — overly permissive IAM roles, Key Vault misconfigurations
 - **CI/CD workflows** (`.github/workflows`): GitHub Actions — supply-chain attacks, secret leakage, insecure use of third-party actions
