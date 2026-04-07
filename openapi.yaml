@@ -29,6 +29,9 @@ components:
         dueDate:
           type: string
           format: date-time
+        startDate:
+          type: string
+          format: date-time
         completedDate:
           type: string
           format: date-time
