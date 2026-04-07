@@ -11,7 +11,7 @@ param containers array = [
   {
     name: 'RestoplanItem'
     id: 'RestoplanItem'
-    partitionKey: '/id'
+    partitionKey: '/listId'
   }
 ]
 
