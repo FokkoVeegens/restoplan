@@ -1,17 +1,17 @@
 import { Reducer } from "react";
-import { ActionTypes, TodoActions } from "../actions/common";
-import { TodoItem } from "../models"
+import { ActionTypes, RestoplanActions } from "../actions/common";
+import { RestoplanItem } from "../models"
 
-export const selectedItemReducer: Reducer<TodoItem | undefined, TodoActions> = (state: TodoItem | undefined, action: TodoActions): TodoItem | undefined => {
+export const selectedItemReducer: Reducer<RestoplanItem | undefined, RestoplanActions> = (state: RestoplanItem | undefined, action: RestoplanActions): RestoplanItem | undefined => {
     switch (action.type) {
-        case ActionTypes.SELECT_TODO_ITEM:
-        case ActionTypes.LOAD_TODO_ITEM:
+        case ActionTypes.SELECT_RESTOPLAN_ITEM:
+        case ActionTypes.LOAD_RESTOPLAN_ITEM:
             state = action.payload ? { ...action.payload } : undefined;
             break;
-        case ActionTypes.LOAD_TODO_LIST:
+        case ActionTypes.LOAD_RESTOPLAN_LIST:
             state = undefined;
             break;
-        case ActionTypes.DELETE_TODO_ITEM:
+        case ActionTypes.DELETE_RESTOPLAN_ITEM:
             if (state && state.id === action.payload) {
                 state = undefined;
             }

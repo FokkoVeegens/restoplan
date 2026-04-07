@@ -4,13 +4,13 @@ param tags object = {}
 
 param containers array = [
   {
-    name: 'TodoList'
-    id: 'TodoList'
+    name: 'RestoplanList'
+    id: 'RestoplanList'
     partitionKey: '/id'
   }
   {
-    name: 'TodoItem'
-    id: 'TodoItem'
+    name: 'RestoplanItem'
+    id: 'RestoplanItem'
     partitionKey: '/id'
   }
 ]
@@ -20,7 +20,7 @@ param keyVaultName string
 param principalIds array = []
 
 // Because databaseName is optional in main.bicep, we make sure the database name is set here.
-var defaultDatabaseName = 'Todo'
+var defaultDatabaseName = 'Restoplan'
 var actualDatabaseName = !empty(databaseName) ? databaseName : defaultDatabaseName
 
 module cosmos '../core/database/cosmos/sql/cosmos-sql-db.bicep' = {

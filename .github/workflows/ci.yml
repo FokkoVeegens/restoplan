@@ -22,19 +22,19 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore src/api/Todo.Api.sln
+        run: dotnet restore src/api/Restoplan.Api.sln
 
       - name: Build
-        run: dotnet build src/api/Todo.Api.sln --no-restore --configuration Release
+        run: dotnet build src/api/Restoplan.Api.sln --no-restore --configuration Release
 
       - name: Lint (format check)
-        run: dotnet format src/api/Todo.Api.sln --verify-no-changes --verbosity normal
+        run: dotnet format src/api/Restoplan.Api.sln --verify-no-changes --verbosity normal
 
       - name: Run unit tests
-        run: dotnet test src/api/Todo.Api.sln --no-build --configuration Release --verbosity normal
+        run: dotnet test src/api/Restoplan.Api.sln --no-build --configuration Release --verbosity normal
 
       - name: Publish
-        run: dotnet publish src/api/Todo.Api.csproj --no-restore --no-build --configuration Release --output ./publish/api
+        run: dotnet publish src/api/Restoplan.Api.csproj --no-restore --no-build --configuration Release --output ./publish/api
 
       - name: Upload backend artifact
         uses: actions/upload-artifact@v7
@@ -137,7 +137,7 @@ jobs:
         if: vars.REACT_APP_WEB_BASE_URL == ''
         # Redirect output to a file so the process is not killed by SIGPIPE when
         # GitHub Actions closes the step's output pipe after the shell exits.
-        run: dotnet ./publish/api/Todo.Api.dll > /tmp/api.log 2>&1 &
+        run: dotnet ./publish/api/Restoplan.Api.dll > /tmp/api.log 2>&1 &
         env:
           ASPNETCORE_URLS: http://localhost:3100
           AZURE_COSMOS_ENDPOINT: https://localhost:8081

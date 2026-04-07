@@ -1,6 +1,6 @@
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
-using SimpleTodo.Api;
+using Restoplan.Api;
 
 var credential = new DefaultAzureCredential();
 var builder = WebApplication.CreateBuilder(args);
@@ -44,8 +44,8 @@ for (var attempt = 1; attempt <= maxInitAttempts; attempt++)
     {
         await cosmosClient.CreateDatabaseIfNotExistsAsync(databaseName);
         var database = cosmosClient.GetDatabase(databaseName);
-        await database.CreateContainerIfNotExistsAsync("TodoList", "/id");
-        await database.CreateContainerIfNotExistsAsync("TodoItem", "/listId");
+        await database.CreateContainerIfNotExistsAsync("RestoplanList", "/id");
+        await database.CreateContainerIfNotExistsAsync("RestoplanItem", "/listId");
         break;
     }
     catch (Exception) when (attempt < maxInitAttempts)
@@ -88,5 +88,5 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.MapGroup("/lists")
-    .MapTodoApi();
+    .MapRestoplanApi();
 app.Run();
