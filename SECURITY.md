@@ -1,8 +1,10 @@
 # Security Policy
 
+> **Note**: This is a personal hobby project intended for private use. It has no commercial users or SLAs. The security policy below reflects that context.
+
 ## Supported Versions
 
-This project is under active development. Security fixes are applied to the latest version on the `main` branch only.
+Security fixes are applied to the latest version on the `main` branch only.
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -11,12 +13,12 @@ This project is under active development. Security fixes are applied to the late
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in this repository, **please do not open a public GitHub issue**. Instead, use one of the following private channels:
+If you discover a security vulnerability, **please do not open a public GitHub issue**. Instead, report it privately:
 
 - **GitHub Private Vulnerability Reporting** (preferred): Use the [Report a vulnerability](../../security/advisories/new) button on the Security tab of this repository.
-- **Email**: Contact the repository owner directly via their [GitHub profile](https://github.com/FokkoVeegens).
+- **Direct contact**: Reach the maintainer via their [GitHub profile](https://github.com/FokkoVeegens).
 
-Please include as much detail as possible in your report:
+Please include:
 
 - A description of the vulnerability and its potential impact
 - Steps to reproduce the issue
@@ -25,19 +27,20 @@ Please include as much detail as possible in your report:
 
 ## Response Timeline
 
-| Milestone | Target timeframe |
-| --------- | ---------------- |
-| Acknowledgement of report | Within **5 business days** |
-| Initial assessment / triage | Within **10 business days** |
-| Fix or mitigation published | Depends on severity; critical issues are prioritized |
+This is a hobby project maintained in spare time, so responses are **best-effort** rather than guaranteed. The maintainer will aim to:
+
+- Acknowledge the report as soon as reasonably possible
+- Assess and address the issue based on availability and severity
+
+There are no guaranteed response windows or formal SLAs.
 
 ## Scope
 
 The following are in scope for security reports:
 
-- **API** (`src/api`): C# .NET 8 Web API — injection attacks, authentication/authorization bypasses, insecure deserialization, sensitive data exposure
-- **Web frontend** (`src/web`): React + Vite app — XSS, CSRF, insecure dependencies, exposed secrets
-- **Infrastructure** (`infra`): Azure Bicep templates — overly permissive IAM roles, insecure network configurations, Key Vault misconfigurations
+- **API** (`src/api`): C# .NET 8 Web API — injection attacks, insecure deserialization, sensitive data exposure
+- **Web frontend** (`src/web`): React + Vite app — XSS, insecure dependencies, exposed secrets
+- **Infrastructure** (`infra`): Azure Bicep templates — overly permissive IAM roles, Key Vault misconfigurations
 - **CI/CD workflows** (`.github/workflows`): GitHub Actions — supply-chain attacks, secret leakage, insecure use of third-party actions
 - **Dependencies**: Vulnerabilities in NuGet packages (`src/api`) or npm packages (`src/web`)
 
@@ -45,12 +48,13 @@ The following are **out of scope**:
 
 - Theoretical or unproven vulnerabilities without a working proof of concept
 - Social engineering or phishing attacks
-- Vulnerabilities in upstream dependencies that are already publicly known and tracked by Dependabot
+- Vulnerabilities in upstream dependencies already publicly known and tracked by Dependabot
 - Issues in the Azure Cosmos DB Emulator used only for local development
+- Issues that require access to another user's private deployment of this project
 
 ## Security Best Practices for Contributors
 
 - **Never commit secrets.** Use dotnet user-secrets for local API configuration and GitHub Actions secrets for CI/CD pipelines.
 - **Keep dependencies up to date.** This repository uses [Dependabot](.github/dependabot.yml) to automatically propose updates for NuGet, npm, Docker, GitHub Actions, and Dev Container dependencies.
 - **Follow least-privilege principles** when modifying Azure infrastructure in `infra/`. Managed identities and Azure Key Vault are already used to avoid hard-coded credentials.
-- **Run CodeQL scans locally** or review the results from the [CodeQL workflow](.github/workflows/codeql.yml) before merging changes.
+- **Review CodeQL results** from the [CodeQL workflow](.github/workflows/codeql.yml) before merging changes.
