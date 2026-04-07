@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace SimpleTodo.Api
+namespace Restoplan.Api
 {
-    public static class TodoEndpointsExtensions
+    public static class RestoplanEndpointsExtensions
     {
-        public static RouteGroupBuilder MapTodoApi(this RouteGroupBuilder group)
+        public static RouteGroupBuilder MapRestoplanApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetLists);
             group.MapPost("/", CreateList);
@@ -20,21 +20,21 @@ namespace SimpleTodo.Api
             return group;
         }
 
-        public static async Task<Ok<IEnumerable<TodoList>>> GetLists(ListsRepository repository, int? skip = null, int? batchSize = null)
+        public static async Task<Ok<IEnumerable<RestoplanList>>> GetLists(ListsRepository repository, int? skip = null, int? batchSize = null)
         {
             return TypedResults.Ok(await repository.GetListsAsync(skip, batchSize));
         }
 
-        public static async Task<IResult> CreateList(ListsRepository repository, CreateUpdateTodoList list)
+        public static async Task<IResult> CreateList(ListsRepository repository, CreateUpdateRestoplanList list)
         {
-            var todoList = new TodoList(list.name)
+            var RestoplanList = new RestoplanList(list.name)
             {
                 Description = list.description
             };
 
-            await repository.AddListAsync(todoList);
+            await repository.AddListAsync(RestoplanList);
 
-            return TypedResults.Created($"/lists/{todoList.Id}", todoList);
+            return TypedResults.Created($"/lists/{RestoplanList.Id}", RestoplanList);
         }
 
         public static async Task<IResult> GetList(ListsRepository repository, string listId)
@@ -44,7 +44,7 @@ namespace SimpleTodo.Api
             return list == null ? TypedResults.NotFound() : TypedResults.Ok(list);
         }
 
-        public static async Task<IResult> UpdateList(ListsRepository repository, string listId, CreateUpdateTodoList list)
+        public static async Task<IResult> UpdateList(ListsRepository repository, string listId, CreateUpdateRestoplanList list)
         {
             var existingList = await repository.GetListAsync(listId);
             if (existingList == null)
@@ -82,14 +82,14 @@ namespace SimpleTodo.Api
             return TypedResults.Ok(await repository.GetListItemsAsync(listId, skip, batchSize));
         }
 
-        public static async Task<IResult> CreateListItem(ListsRepository repository, string listId, CreateUpdateTodoItem item)
+        public static async Task<IResult> CreateListItem(ListsRepository repository, string listId, CreateUpdateRestoplanItem item)
         {
             if (await repository.GetListAsync(listId) == null)
             {
                 return TypedResults.NotFound();
             }
 
-            var newItem = new TodoItem(listId, item.name)
+            var newItem = new RestoplanItem(listId, item.name)
             {
                 Name = item.name,
                 Description = item.description,
@@ -115,7 +115,7 @@ namespace SimpleTodo.Api
             return item == null ? TypedResults.NotFound() : TypedResults.Ok(item);
         }
 
-        public static async Task<IResult> UpdateListItem(ListsRepository repository, string listId, string itemId, CreateUpdateTodoItem item)
+        public static async Task<IResult> UpdateListItem(ListsRepository repository, string listId, string itemId, CreateUpdateRestoplanItem item)
         {
             var existingItem = await repository.GetListItemAsync(listId, itemId);
             if (existingItem == null)
@@ -159,6 +159,6 @@ namespace SimpleTodo.Api
         }
     }
 
-    public record CreateUpdateTodoList(string name, string? description = null);
-    public record CreateUpdateTodoItem(string name, string state, DateTimeOffset? dueDate, DateTimeOffset? completedDate, DateTimeOffset? startDate = null, string? description = null);
+    public record CreateUpdateRestoplanList(string name, string? description = null);
+    public record CreateUpdateRestoplanItem(string name, string state, DateTimeOffset? dueDate, DateTimeOffset? completedDate, DateTimeOffset? startDate = null, string? description = null);
 }

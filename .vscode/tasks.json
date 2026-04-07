@@ -42,7 +42,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/api/Todo.Api.csproj",
+                "${workspaceFolder}/src/api/Restoplan.Api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

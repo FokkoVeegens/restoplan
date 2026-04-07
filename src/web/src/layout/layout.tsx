@@ -5,19 +5,19 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import HomePage from '../pages/homePage';
 import { Stack } from '@fluentui/react';
 import { AppContext } from '../models/applicationState';
-import { TodoContext } from '../components/todoContext';
+import { RestoplanContext } from '../components/restoplanContext';
 import * as itemActions from '../actions/itemActions';
 import * as listActions from '../actions/listActions';
 import { ListActions } from '../actions/listActions';
 import { ItemActions } from '../actions/itemActions';
-import { TodoItem, TodoList } from '../models';
+import { RestoplanItem, RestoplanList } from '../models';
 import { headerStackStyles, mainStackStyles, rootStackStyles, sidebarStackStyles } from '../ux/styles';
-import TodoItemDetailPane from '../components/todoItemDetailPane';
+import RestoplanItemDetailPane from '../components/restoplanItemDetailPane';
 import { bindActionCreators } from '../actions/actionCreators';
 
 const Layout: FC = (): ReactElement => {
     const navigate = useNavigate();
-    const appContext = useContext<AppContext>(TodoContext)
+    const appContext = useContext<AppContext>(RestoplanContext)
     const actions = useMemo(() => ({
         lists: bindActionCreators(listActions, appContext.dispatch) as unknown as ListActions,
         items: bindActionCreators(itemActions, appContext.dispatch) as unknown as ItemActions,
@@ -30,12 +30,12 @@ const Layout: FC = (): ReactElement => {
         }
     }, [actions.lists, appContext.state.lists]);
 
-    const onListCreated = async (list: TodoList) => {
+    const onListCreated = async (list: RestoplanList) => {
         const newList = await actions.lists.save(list);
         navigate(`/lists/${newList.id}`);
     }
 
-    const onItemEdited = (item: TodoItem) => {
+    const onItemEdited = (item: RestoplanItem) => {
         actions.items.save(item.listId, item);
         actions.items.select(undefined);
         navigate(`/lists/${item.listId}`);
@@ -69,7 +69,7 @@ const Layout: FC = (): ReactElement => {
                     </Routes>
                 </Stack.Item>
                 <Stack.Item styles={sidebarStackStyles}>
-                    <TodoItemDetailPane
+                    <RestoplanItemDetailPane
                         item={appContext.state.selectedItem}
                         onEdit={onItemEdited}
                         onCancel={onItemEditCancel} />

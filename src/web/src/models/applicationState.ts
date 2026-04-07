@@ -1,17 +1,17 @@
 import { Dispatch } from "react";
-import { TodoActions } from "../actions/common";
-import { TodoItem } from "./todoItem";
-import { TodoList } from "./todoList";
+import { RestoplanActions } from "../actions/common";
+import { RestoplanItem } from "./restoplanItem";
+import { RestoplanList } from "./restoplanList";
 
 export interface AppContext {
     state: ApplicationState
-    dispatch: Dispatch<TodoActions>
+    dispatch: Dispatch<RestoplanActions>
 }
 
 export interface ApplicationState {
-    lists?: TodoList[]
-    selectedList?: TodoList
-    selectedItem?: TodoItem
+    lists?: RestoplanList[]
+    selectedList?: RestoplanList
+    selectedItem?: RestoplanItem
 }
 
 export const getDefaultState = (): ApplicationState => {

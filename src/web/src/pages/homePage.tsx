@@ -1,10 +1,10 @@
 import { useEffect, useContext, useMemo, useState, Fragment } from 'react';
 import { IconButton, IContextualMenuProps, IIconProps, Stack, Text, Shimmer, ShimmerElementType } from '@fluentui/react';
-import TodoItemListPane from '../components/todoItemListPane';
-import { TodoItem, TodoItemState } from '../models';
+import RestoplanItemListPane from '../components/restoplanItemListPane';
+import { RestoplanItem, RestoplanItemState } from '../models';
 import * as itemActions from '../actions/itemActions';
 import * as listActions from '../actions/listActions';
-import { TodoContext } from '../components/todoContext';
+import { RestoplanContext } from '../components/restoplanContext';
 import { AppContext } from '../models/applicationState';
 import { ItemActions } from '../actions/itemActions';
 import { ListActions } from '../actions/listActions';
@@ -15,7 +15,7 @@ import WithApplicationInsights from '../components/telemetryWithAppInsights.tsx'
 
 const HomePage = () => {
     const navigate = useNavigate();
-    const appContext = useContext<AppContext>(TodoContext)
+    const appContext = useContext<AppContext>(RestoplanContext)
     const { listId, itemId } = useParams();
     const actions = useMemo(() => ({
         lists: bindActionCreators(listActions, appContext.dispatch) as unknown as ListActions,
@@ -65,21 +65,21 @@ const HomePage = () => {
         }
     }, [actions.items, appContext.state.selectedList?.id, appContext.state.selectedList?.items])
 
-    const onItemCreated = async (item: TodoItem) => {
+    const onItemCreated = async (item: RestoplanItem) => {
         return await actions.items.save(item.listId, item);
     }
 
-    const onItemCompleted = (item: TodoItem) => {
-        item.state = TodoItemState.Done;
+    const onItemCompleted = (item: RestoplanItem) => {
+        item.state = RestoplanItemState.Done;
         item.completedDate = new Date();
         actions.items.save(item.listId, item);
     }
 
-    const onItemSelected = (item?: TodoItem) => {
+    const onItemSelected = (item?: RestoplanItem) => {
         actions.items.select(item);
     }
 
-    const onItemDeleted = (item: TodoItem) => {
+    const onItemDeleted = (item: RestoplanItem) => {
         if (item.id) {
             actions.items.remove(item.listId, item);
             navigate(`/lists/${item.listId}`);
@@ -143,7 +143,7 @@ const HomePage = () => {
                 </Stack>
             </Stack.Item>
             <Stack.Item tokens={stackItemPadding}>
-                <TodoItemListPane
+                <RestoplanItemListPane
                     list={appContext.state.selectedList}
                     items={appContext.state.selectedList?.items}
                     selectedItem={appContext.state.selectedItem}

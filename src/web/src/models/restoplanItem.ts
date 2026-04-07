@@ -1,14 +1,14 @@
-export enum TodoItemState {
+export enum RestoplanItemState {
     Todo = "todo",
     InProgress = "inprogress",
     Done = "done"
 }
 
-export interface TodoItem {
+export interface RestoplanItem {
     id?: string
     listId: string
     name: string
-    state: TodoItemState
+    state: RestoplanItemState
     description?: string
     dueDate?: Date
     completedDate?:Date

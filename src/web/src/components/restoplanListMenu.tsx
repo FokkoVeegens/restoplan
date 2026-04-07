@@ -1,20 +1,20 @@
 import { IIconProps, INavLink, INavLinkGroup, Nav, Stack, TextField } from '@fluentui/react';
 import { FC, ReactElement, useState, FormEvent, MouseEvent } from 'react';
 import { useNavigate } from 'react-router';
-import { TodoList } from '../models/todoList';
+import { RestoplanList } from '../models/restoplanList';
 import { stackItemPadding } from '../ux/styles';
 
-interface TodoListMenuProps {
-    selectedList?: TodoList
-    lists?: TodoList[]
-    onCreate: (list: TodoList) => void
+interface RestoplanListMenuProps {
+    selectedList?: RestoplanList
+    lists?: RestoplanList[]
+    onCreate: (list: RestoplanList) => void
 }
 
 const iconProps: IIconProps = {
     iconName: 'AddToShoppingList'
 }
 
-const TodoListMenu: FC<TodoListMenuProps> = (props: TodoListMenuProps): ReactElement => {
+const RestoplanListMenu: FC<RestoplanListMenuProps> = (props: RestoplanListMenuProps): ReactElement => {
     const navigate = useNavigate();
     const [newListName, setNewListName] = useState('');
 
@@ -28,7 +28,7 @@ const TodoListMenu: FC<TodoListMenuProps> = (props: TodoListMenuProps): ReactEle
         navigate(`/lists/${item.key}`);
     }
 
-    const createNavGroups = (lists: TodoList[]): INavLinkGroup[] => {
+    const createNavGroups = (lists: RestoplanList[]): INavLinkGroup[] => {
         const links = lists.map(list => ({
             key: list.id,
             name: list.name,
@@ -50,7 +50,7 @@ const TodoListMenu: FC<TodoListMenuProps> = (props: TodoListMenuProps): ReactEle
         evt.preventDefault();
 
         if (newListName) {
-            const list: TodoList = {
+            const list: RestoplanList = {
                 name: newListName
             };
 
@@ -82,4 +82,4 @@ const TodoListMenu: FC<TodoListMenuProps> = (props: TodoListMenuProps): ReactEle
     );
 };
 
-export default TodoListMenu;
+export default RestoplanListMenu;

@@ -1,6 +1,6 @@
-# ToDo Application Tests
+# Restoplan Application Tests
 
-The included [Playwright](https://playwright.dev/) smoke test will hit the ToDo app web endpoint, create, and delete an item.
+The included [Playwright](https://playwright.dev/) smoke test will hit the Restoplan app web endpoint, create, and delete an item.
 
 ## Run Tests
 

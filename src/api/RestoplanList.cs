@@ -1,8 +1,8 @@
-namespace SimpleTodo.Api;
+namespace Restoplan.Api;
 
-public class TodoList
+public class RestoplanList
 {
-    public TodoList(string name)
+    public RestoplanList(string name)
     {
         Name = name;
     }

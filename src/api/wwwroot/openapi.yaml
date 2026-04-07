@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
-  description: Simple Todo API
+  description: Restoplan API
   version: 3.0.0
-  title: Simple Todo API
+  title: Restoplan API
   contact:
     email: azdevteam@microsoft.com
 
 components:
   schemas:
-    TodoItem:
+    RestoplanItem:
       type: object
       required:
         - listId
@@ -25,7 +25,7 @@ components:
         description:
           type: string
         state:
-          $ref: "#/components/schemas/TodoState"
+          $ref: "#/components/schemas/RestoplanState"
         dueDate:
           type: string
           format: date-time
@@ -35,7 +35,7 @@ components:
         startDate:
           type: string
           format: date-time
-    TodoList:
+    RestoplanList:
       type: object
       required:
         - name
@@ -46,8 +46,8 @@ components:
           type: string
         description:
           type: string
-      description: " A list of related Todo items"
-    TodoState:
+      description: " A list of related Restoplan items"
+    RestoplanState:
       type: string
       enum:
         - todo
@@ -58,23 +58,23 @@ components:
       in: path
       required: true
       name: listId
-      description: The Todo list unique identifier
+      description: The Restoplan list unique identifier
       schema:
         type: string
     itemId:
       in: path
       required: true
       name: itemId
-      description: The Todo item unique identifier
+      description: The Restoplan item unique identifier
       schema:
         type: string
     state:
       in: path
       required: true
       name: state
-      description: The Todo item state
+      description: The Restoplan item state
       schema:
-        $ref: "#/components/schemas/TodoState"
+        $ref: "#/components/schemas/RestoplanState"
     top:
       in: query
       required: false
@@ -93,54 +93,54 @@ components:
         default: 0
 
   requestBodies:
-    TodoList:
-      description: The Todo List
+    RestoplanList:
+      description: The Restoplan List
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/TodoList"
-    TodoItem:
-      description: The Todo Item
+            $ref: "#/components/schemas/RestoplanList"
+    RestoplanItem:
+      description: The Restoplan Item
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/TodoItem"
+            $ref: "#/components/schemas/RestoplanItem"
 
   responses:
-    TodoList:
-      description: A Todo list result
+    RestoplanList:
+      description: A Restoplan list result
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/TodoList"
+            $ref: "#/components/schemas/RestoplanList"
     TodoListArray:
-      description: An array of Todo lists
+      description: An array of Restoplan lists
       content:
         application/json:
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/TodoList"
-    TodoItem:
-      description: A Todo item result
+              $ref: "#/components/schemas/RestoplanList"
+    RestoplanItem:
+      description: A Restoplan item result
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/TodoItem"
+            $ref: "#/components/schemas/RestoplanItem"
     TodoItemArray:
-      description: An array of Todo items
+      description: An array of Restoplan items
       content:
         application/json:
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/TodoItem"
+              $ref: "#/components/schemas/RestoplanItem"
 
 paths:
   /lists:
     get:
       operationId: GetLists
-      summary: Gets an array of Todo lists
+      summary: Gets An array of Restoplan lists
       tags:
         - Lists
       parameters:
@@ -151,75 +151,75 @@ paths:
           $ref: "#/components/responses/TodoListArray"
     post:
       operationId: CreateList
-      summary: Creates a new Todo list
+      summary: Creates a new Restoplan list
       tags:
         - Lists
       requestBody:
-        $ref: "#/components/requestBodies/TodoList"
+        $ref: "#/components/requestBodies/RestoplanList"
       responses:
         201:
-          $ref: "#/components/responses/TodoList"
+          $ref: "#/components/responses/RestoplanList"
         400:
           description: Invalid request schema
   /lists/{listId}:
     get:
       operationId: GetListById
-      summary: Gets a Todo list by unique identifier
+      summary: Gets a Restoplan list by unique identifier
       tags:
         - Lists
       parameters:
         - $ref: "#/components/parameters/listId"
       responses:
         200:
-          $ref: "#/components/responses/TodoList"
+          $ref: "#/components/responses/RestoplanList"
         404:
-          description: Todo list not found
+          description: Restoplan list not found
     put:
       operationId: UpdateListById
-      summary: Updates a Todo list by unique identifier
+      summary: Updates a Restoplan list by unique identifier
       tags:
         - Lists
       requestBody:
-        $ref: "#/components/requestBodies/TodoList"
+        $ref: "#/components/requestBodies/RestoplanList"
       parameters:
         - $ref: "#/components/parameters/listId"
       responses:
         200:
-          $ref: "#/components/responses/TodoList"
+          $ref: "#/components/responses/RestoplanList"
         404:
-          description: Todo list not found
+          description: Restoplan list not found
         400:
-          description: Todo list is invalid
+          description: Restoplan list is invalid
     delete:
       operationId: DeleteListById
-      summary: Deletes a Todo list by unique identifier
+      summary: Deletes a Restoplan list by unique identifier
       tags:
         - Lists
       parameters:
         - $ref: "#/components/parameters/listId"
       responses:
         204:
-          description: Todo list deleted successfully
+          description: Restoplan list deleted successfully
         404:
-          description: Todo list not found
+          description: Restoplan list not found
   /lists/{listId}/items:
     post:
       operationId: CreateItem
-      summary: Creates a new Todo item within a list
+      summary: Creates a new Restoplan item within a list
       tags:
         - Items
       requestBody:
-        $ref: "#/components/requestBodies/TodoItem"
+        $ref: "#/components/requestBodies/RestoplanItem"
       parameters:
         - $ref: "#/components/parameters/listId"
       responses:
         201:
-          $ref: "#/components/responses/TodoItem"
+          $ref: "#/components/responses/RestoplanItem"
         404:
-          description: Todo list not found
+          description: Restoplan list not found
     get:
       operationId: GetItemsByListId
-      summary: Gets Todo items within the specified list
+      summary: Gets Restoplan items within the specified list
       tags:
         - Items
       parameters:
@@ -230,11 +230,11 @@ paths:
         200:
           $ref: "#/components/responses/TodoItemArray"
         404:
-          description: Todo list not found
+          description: Restoplan list not found
   /lists/{listId}/items/{itemId}:
     get:
       operationId: GetItemById
-      summary: Gets a Todo item by unique identifier
+      summary: Gets a Restoplan item by unique identifier
       tags:
         - Items
       parameters:
@@ -242,29 +242,29 @@ paths:
         - $ref: "#/components/parameters/itemId"
       responses:
         200:
-          $ref: "#/components/responses/TodoItem"
+          $ref: "#/components/responses/RestoplanItem"
         404:
-          description: Todo list or item not found
+          description: Restoplan list or item not found
     put:
       operationId: UpdateItemById
-      summary: Updates a Todo item by unique identifier
+      summary: Updates a Restoplan item by unique identifier
       tags:
         - Items
       requestBody:
-        $ref: "#/components/requestBodies/TodoItem"
+        $ref: "#/components/requestBodies/RestoplanItem"
       parameters:
         - $ref: "#/components/parameters/listId"
         - $ref: "#/components/parameters/itemId"
       responses:
         200:
-          $ref: "#/components/responses/TodoItem"
+          $ref: "#/components/responses/RestoplanItem"
         400:
-          description: Todo item is invalid
+          description: Restoplan item is invalid
         404:
-          description: Todo list or item not found
+          description: Restoplan list or item not found
     delete:
       operationId: DeleteItemById
-      summary: Deletes a Todo item by unique identifier
+      summary: Deletes a Restoplan item by unique identifier
       tags:
         - Items
       parameters:
@@ -272,13 +272,13 @@ paths:
         - $ref: "#/components/parameters/itemId"
       responses:
         204:
-          description: Todo item deleted successfully
+          description: Restoplan item deleted successfully
         404:
-          description: Todo list or item not found
+          description: Restoplan list or item not found
   /lists/{listId}/items/state/{state}:
     get:
       operationId: GetItemsByListIdAndState
-      summary: Gets a list of Todo items of a specific state
+      summary: Gets a list of Restoplan items of a specific state
       tags:
         - Items
       parameters:
@@ -290,26 +290,26 @@ paths:
         200:
           $ref: "#/components/responses/TodoItemArray"
         404:
-          description: Todo list or item not found
+          description: Restoplan list or item not found
     put:
       operationId: UpdateItemsStateByListId
       summary: Changes the state of the specified list items
       tags:
         - Items
       requestBody:
-        description: unique identifiers of the Todo items to update
+        description: unique identifiers of the Restoplan items to update
         content:
           application/json:
             schema:
               type: array
               items:
-                description: The Todo item unique identifier
+                description: The Restoplan item unique identifier
                 type: string
       parameters:
         - $ref: "#/components/parameters/listId"
         - $ref: "#/components/parameters/state"
       responses:
         204:
-          description: Todo items updated
+          description: Restoplan items updated
         400:
           description: Update request is invalid

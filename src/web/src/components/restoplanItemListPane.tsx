@@ -1,30 +1,30 @@
 import { CommandBar, DetailsList, DetailsListLayoutMode, IStackStyles, Selection, Label, Spinner, SpinnerSize, Stack, IIconProps, SearchBox, Text, IGroup, IColumn, MarqueeSelection, FontIcon, IObjectWithKey, CheckboxVisibility, IDetailsGroupRenderProps, getTheme } from '@fluentui/react';
 import { ReactElement, useEffect, useState, FormEvent, FC } from 'react';
 import { useNavigate } from 'react-router';
-import { TodoItem, TodoItemState, TodoList } from '../models';
+import { RestoplanItem, RestoplanItemState, RestoplanList } from '../models';
 import { stackItemPadding } from '../ux/styles';
 
-interface TodoItemListPaneProps {
-    list?: TodoList
-    items?: TodoItem[]
-    selectedItem?: TodoItem;
+interface RestoplanItemListPaneProps {
+    list?: RestoplanList
+    items?: RestoplanItem[]
+    selectedItem?: RestoplanItem;
     disabled: boolean
-    onCreated: (item: TodoItem) => void
-    onDelete: (item: TodoItem) => void
-    onComplete: (item: TodoItem) => void
-    onSelect: (item?: TodoItem) => void
+    onCreated: (item: RestoplanItem) => void
+    onDelete: (item: RestoplanItem) => void
+    onComplete: (item: RestoplanItem) => void
+    onSelect: (item?: RestoplanItem) => void
 }
 
-interface TodoDisplayItem extends IObjectWithKey {
+interface RestoplanDisplayItem extends IObjectWithKey {
     id?: string
     listId: string
     name: string
-    state: TodoItemState
+    state: RestoplanItemState
     description?: string
     startDate: Date | string
     dueDate: Date | string
     completedDate: Date | string
-    data: TodoItem
+    data: RestoplanItem
     createdDate?: Date
     updatedDate?: Date
 }
@@ -37,7 +37,7 @@ const addIconProps: IIconProps = {
     }
 };
 
-const createListItems = (items: TodoItem[]): TodoDisplayItem[] => {
+const createListItems = (items: RestoplanItem[]): RestoplanDisplayItem[] => {
     return items.map(item => ({
         ...item,
         key: item.id,
@@ -54,18 +54,18 @@ const stackStyles: IStackStyles = {
     }
 }
 
-const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProps): ReactElement => {
+const RestoplanItemListPane: FC<RestoplanItemListPaneProps> = (props: RestoplanItemListPaneProps): ReactElement => {
     const theme = getTheme();
     const navigate = useNavigate();
     const [newItemName, setNewItemName] = useState('');
     const [items, setItems] = useState(createListItems(props.items || []));
-    const [selectedItems, setSelectedItems] = useState<TodoItem[]>([]);
+    const [selectedItems, setSelectedItems] = useState<RestoplanItem[]>([]);
     const [isDoneCategoryCollapsed, setIsDoneCategoryCollapsed] = useState(true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const selection = new Selection({
         onSelectionChanged: () => {
-            const selectedItems = selection.getSelection().map(item => (item as TodoDisplayItem).data);
+            const selectedItems = selection.getSelection().map(item => (item as RestoplanDisplayItem).data);
             setSelectedItems(selectedItems);
         }
     });
@@ -94,7 +94,7 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
             selection.setKeySelected(props.selectedItem.id, true, true);
         }
 
-        const doneItems = selectedItems.filter(i => i.state === TodoItemState.Done);
+        const doneItems = selectedItems.filter(i => i.state === RestoplanItemState.Done);
         if (doneItems.length > 0) {
             setIsDoneCategoryCollapsed(false);
         }
@@ -103,22 +103,22 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
 
     const groups: IGroup[] = [
         {
-            key: TodoItemState.Todo,
+            key: RestoplanItemState.Todo,
             name: 'Todo',
-            count: items.filter(i => i.state === TodoItemState.Todo).length,
-            startIndex: items.findIndex(i => i.state === TodoItemState.Todo),
+            count: items.filter(i => i.state === RestoplanItemState.Todo).length,
+            startIndex: items.findIndex(i => i.state === RestoplanItemState.Todo),
         },
         {
-            key: TodoItemState.InProgress,
+            key: RestoplanItemState.InProgress,
             name: 'In Progress',
-            count: items.filter(i => i.state === TodoItemState.InProgress).length,
-            startIndex: items.findIndex(i => i.state === TodoItemState.InProgress)
+            count: items.filter(i => i.state === RestoplanItemState.InProgress).length,
+            startIndex: items.findIndex(i => i.state === RestoplanItemState.InProgress)
         },
         {
-            key: TodoItemState.Done,
+            key: RestoplanItemState.Done,
             name: 'Done',
-            count: items.filter(i => i.state === TodoItemState.Done).length,
-            startIndex: items.findIndex(i => i.state === TodoItemState.Done),
+            count: items.filter(i => i.state === RestoplanItemState.Done).length,
+            startIndex: items.findIndex(i => i.state === RestoplanItemState.Done),
             isCollapsed: isDoneCategoryCollapsed
         },
     ]
@@ -127,10 +127,10 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
         evt.preventDefault();
 
         if (newItemName && props.onCreated) {
-            const item: TodoItem = {
+            const item: RestoplanItem = {
                 name: newItemName,
                 listId: props.list?.id || '',
-                state: TodoItemState.Todo,
+                state: RestoplanItemState.Todo,
             }
             props.onCreated(item);
             setNewItemName('');
@@ -141,7 +141,7 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
         setNewItemName(value || '');
     }
 
-    const selectItem = (item: TodoDisplayItem) => {
+    const selectItem = (item: RestoplanDisplayItem) => {
         navigate(`/lists/${item.data.listId}/items/${item.data.id}`);
     }
 
@@ -170,8 +170,8 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
         }
     }
 
-    const renderItemColumn = (item: TodoDisplayItem, _index?: number, column?: IColumn) => {
-        const fieldContent = item[column?.fieldName as keyof TodoDisplayItem] as string;
+    const renderItemColumn = (item: RestoplanDisplayItem, _index?: number, column?: IColumn) => {
+        const fieldContent = item[column?.fieldName as keyof RestoplanDisplayItem] as string;
 
         switch (column?.key) {
             case "name":
@@ -217,7 +217,7 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
                                         onClick: () => { deleteItems() }
                                     }
                                 ]}
-                                ariaLabel="Todo actions" />
+                                ariaLabel="Restoplan item actions" />
                         </Stack.Item>
                     </Stack>
                 </form>
@@ -258,4 +258,4 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
     );
 };
 
-export default TodoItemListPane;
+export default RestoplanItemListPane;

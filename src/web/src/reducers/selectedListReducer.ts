@@ -1,24 +1,24 @@
 import { Reducer } from "react";
-import { ActionTypes, TodoActions } from "../actions/common";
-import { TodoList } from "../models"
+import { ActionTypes, RestoplanActions } from "../actions/common";
+import { RestoplanList } from "../models"
 
-export const selectedListReducer: Reducer<TodoList | undefined, TodoActions> = (state: TodoList | undefined, action: TodoActions) => {
+export const selectedListReducer: Reducer<RestoplanList | undefined, RestoplanActions> = (state: RestoplanList | undefined, action: RestoplanActions) => {
     switch (action.type) {
-        case ActionTypes.SELECT_TODO_LIST:
-        case ActionTypes.LOAD_TODO_LIST:
+        case ActionTypes.SELECT_RESTOPLAN_LIST:
+        case ActionTypes.LOAD_RESTOPLAN_LIST:
             state = action.payload ? { ...action.payload } : undefined;
             break;
-        case ActionTypes.DELETE_TODO_LIST:
+        case ActionTypes.DELETE_RESTOPLAN_LIST:
             if (state && state.id === action.payload) {
                 state = undefined;
             }
             break;
-        case ActionTypes.LOAD_TODO_ITEMS:
+        case ActionTypes.LOAD_RESTOPLAN_ITEMS:
             if (state) {
                 state.items = [...action.payload];
             }
             break;
-        case ActionTypes.SAVE_TODO_ITEM:
+        case ActionTypes.SAVE_RESTOPLAN_ITEM:
             if (state) {
                 const items = [...state.items || []];
                 const index = items.findIndex(item => item.id === action.payload.id);
@@ -30,7 +30,7 @@ export const selectedListReducer: Reducer<TodoList | undefined, TodoActions> = (
                 }
             }
             break;
-        case ActionTypes.DELETE_TODO_ITEM:
+        case ActionTypes.DELETE_RESTOPLAN_ITEM:
             if (state) {
                 state.items = [...(state.items || []).filter(item => item.id !== action.payload)];
             }
