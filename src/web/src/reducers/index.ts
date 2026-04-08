@@ -1,8 +1,7 @@
 import { Reducer } from "react";
 import { RestoplanActions } from "../actions/common";
-import { listsReducer } from "./listsReducer";
-import { selectedItemReducer } from "./selectedItemReducer";
-import { selectedListReducer } from "./selectedListReducer";
+import { projectsReducer } from "./projectsReducer";
+import { selectedProjectReducer } from "./selectedProjectReducer";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const combineReducers = (slices: {[key: string]: Reducer<any, RestoplanActions>}) => (prevState: any, action: RestoplanActions) =>
@@ -15,7 +14,6 @@ const combineReducers = (slices: {[key: string]: Reducer<any, RestoplanActions>}
     );
 
 export default combineReducers({
-    lists: listsReducer,
-    selectedList: selectedListReducer,
-    selectedItem: selectedItemReducer,
+    projects: projectsReducer,
+    selectedProject: selectedProjectReducer,
 });

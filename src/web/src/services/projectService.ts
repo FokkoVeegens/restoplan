@@ -1,7 +1,7 @@
 import { RestService } from './restService';
-import { RestoplanList } from '../models';
+import { RestoplanProject } from '../models';
 
-export class ListService extends RestService<RestoplanList> {
+export class ProjectService extends RestService<RestoplanProject> {
     public constructor(baseUrl: string, baseRoute: string) {
         super(baseUrl, baseRoute);
     }

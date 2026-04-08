@@ -1,31 +1,21 @@
 import { test, expect } from "@playwright/test";
 import { v4 as uuidv4 } from "uuid";
 
-test("Create and delete item test", async ({ page }) => {
+test("Create and delete project test", async ({ page }) => {
   await page.goto("/", { waitUntil: 'load' });
 
-  await expect(page.locator("text=My List").first()).toBeVisible();
-
-  await expect(page.locator("text=This list is empty.").first()).toBeVisible()
-
   const guid = uuidv4();
-  console.log(`Creating item with text: ${guid}`);
+  console.log(`Creating project with name: ${guid}`);
 
-  await page.locator('[placeholder="Add an item"]').focus();
-  await page.locator('[placeholder="Add an item"]').type(guid);
-  await page.locator('[placeholder="Add an item"]').press("Enter");
+  await page.locator('[placeholder="New Project"]').focus();
+  await page.locator('[placeholder="New Project"]').type(guid);
+  await page.locator('[placeholder="New Project"]').press("Enter");
 
-  console.log(`Deleting item with text: ${guid}`);
-  await expect(page.locator(`text=${guid}`).first()).toBeVisible()
+  console.log(`Verifying project: ${guid}`);
+  await expect(page.locator(`text=${guid}`).first()).toBeVisible();
 
-  await page.locator(`text=${guid}`).click();
+  await page.locator('button[title="Project Actions"]').click();
+  await page.locator('button[role="menuitem"]:has-text("Delete Project")').click();
 
-  /* when delete option is hide behind "..." button */
-  const itemMoreDeleteButton = await page.$('button[role="menuitem"]:has-text("")');
-  if(itemMoreDeleteButton){
-    await itemMoreDeleteButton.click();
-  };
-  await page.locator('button[role="menuitem"]:has-text("Delete")').click();
-
-  await expect(page.locator(`text=${guid}`).first()).toBeHidden()
+  await expect(page.locator(`text=${guid}`).first()).toBeHidden();
 });

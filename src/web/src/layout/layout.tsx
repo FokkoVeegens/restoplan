@@ -6,46 +6,29 @@ import HomePage from '../pages/homePage';
 import { Stack } from '@fluentui/react';
 import { AppContext } from '../models/applicationState';
 import { RestoplanContext } from '../components/restoplanContext';
-import * as itemActions from '../actions/itemActions';
-import * as listActions from '../actions/listActions';
-import { ListActions } from '../actions/listActions';
-import { ItemActions } from '../actions/itemActions';
-import { RestoplanItem, RestoplanList } from '../models';
+import * as projectActions from '../actions/projectActions';
+import { ProjectActions } from '../actions/projectActions';
+import { RestoplanProject } from '../models';
 import { headerStackStyles, mainStackStyles, rootStackStyles, sidebarStackStyles } from '../ux/styles';
-import RestoplanItemDetailPane from '../components/restoplanItemDetailPane';
 import { bindActionCreators } from '../actions/actionCreators';
 
 const Layout: FC = (): ReactElement => {
     const navigate = useNavigate();
     const appContext = useContext<AppContext>(RestoplanContext)
     const actions = useMemo(() => ({
-        lists: bindActionCreators(listActions, appContext.dispatch) as unknown as ListActions,
-        items: bindActionCreators(itemActions, appContext.dispatch) as unknown as ItemActions,
+        projects: bindActionCreators(projectActions, appContext.dispatch) as unknown as ProjectActions,
     }), [appContext.dispatch]);
 
-    // Load initial lists
+    // Load initial projects
     useEffect(() => {
-        if (!appContext.state.lists) {
-            actions.lists.list();
+        if (!appContext.state.projects) {
+            actions.projects.list();
         }
-    }, [actions.lists, appContext.state.lists]);
+    }, [actions.projects, appContext.state.projects]);
 
-    const onListCreated = async (list: RestoplanList) => {
-        const newList = await actions.lists.save(list);
-        navigate(`/lists/${newList.id}`);
-    }
-
-    const onItemEdited = (item: RestoplanItem) => {
-        actions.items.save(item.listId, item);
-        actions.items.select(undefined);
-        navigate(`/lists/${item.listId}`);
-    }
-
-    const onItemEditCancel = () => {
-        if (appContext.state.selectedList) {
-            actions.items.select(undefined);
-            navigate(`/lists/${appContext.state.selectedList.id}`);
-        }
+    const onProjectCreated = async (project: RestoplanProject) => {
+        const newProject = await actions.projects.save(project);
+        navigate(`/projects/${newProject.id}`);
     }
 
     return (
@@ -56,23 +39,16 @@ const Layout: FC = (): ReactElement => {
             <Stack horizontal grow={1}>
                 <Stack.Item styles={sidebarStackStyles}>
                     <Sidebar
-                        selectedList={appContext.state.selectedList}
-                        lists={appContext.state.lists}
-                        onListCreate={onListCreated} />
+                        selectedProject={appContext.state.selectedProject}
+                        projects={appContext.state.projects}
+                        onProjectCreate={onProjectCreated} />
                 </Stack.Item>
                 <Stack.Item grow={1} styles={mainStackStyles}>
                     <Routes>
-                        <Route path="/lists/:listId/items/:itemId" element={<HomePage />} />
-                        <Route path="/lists/:listId" element={<HomePage />} />
-                        <Route path="/lists" element={<HomePage />} />
+                        <Route path="/projects/:projectId" element={<HomePage />} />
+                        <Route path="/projects" element={<HomePage />} />
                         <Route path="/" element={<HomePage />} />
                     </Routes>
-                </Stack.Item>
-                <Stack.Item styles={sidebarStackStyles}>
-                    <RestoplanItemDetailPane
-                        item={appContext.state.selectedItem}
-                        onEdit={onItemEdited}
-                        onCancel={onItemEditCancel} />
                 </Stack.Item>
             </Stack>
         </Stack>
