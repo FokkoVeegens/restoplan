@@ -14,7 +14,10 @@ test("Create and delete project test", async ({ page }) => {
   console.log(`Verifying project: ${guid}`);
   await expect(page.locator(`text=${guid}`).first()).toBeVisible();
 
-  await page.locator('button[title="Project Actions"]').click();
+  await page.waitForURL(/\/projects\//);
+  const actionsButton = page.locator('button[title="Project Actions"]');
+  await expect(actionsButton).toBeEnabled();
+  await actionsButton.click();
   await page.locator('button[role="menuitem"]:has-text("Delete Project")').click();
 
   await expect(page.locator(`text=${guid}`).first()).toBeHidden();

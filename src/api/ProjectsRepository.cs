@@ -45,7 +45,7 @@ public class ProjectsRepository
         await _projectsCollection.UpsertItemAsync(project, new PartitionKey(project.Id));
     }
 
-    public async Task UpdateProject(RestoplanProject project)
+    public async Task UpdateProjectAsync(RestoplanProject project)
     {
         await _projectsCollection.ReplaceItemAsync(project, project.Id, new PartitionKey(project.Id));
     }

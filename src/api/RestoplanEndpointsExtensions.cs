@@ -54,7 +54,7 @@ namespace Restoplan.Api
             existing.Type = project.type;
             existing.UpdatedDate = DateTimeOffset.UtcNow;
 
-            await repository.UpdateProject(existing);
+            await repository.UpdateProjectAsync(existing);
 
             return TypedResults.Ok(existing);
         }

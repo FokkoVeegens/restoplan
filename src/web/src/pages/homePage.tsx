@@ -42,6 +42,12 @@ const HomePage = () => {
         await actions.projects.save(project);
     }
 
+    const onCancel = () => {
+        if (projectId) {
+            actions.projects.load(projectId);
+        }
+    }
+
     const deleteProject = () => {
         if (appContext.state.selectedProject?.id) {
             actions.projects.remove(appContext.state.selectedProject.id);
@@ -102,7 +108,7 @@ const HomePage = () => {
                 <RestoplanProjectDetailPane
                     project={appContext.state.selectedProject}
                     onEdit={onProjectEdited}
-                    onCancel={() => {}} />
+                    onCancel={onCancel} />
             </Stack.Item>
         </Stack >
     );

@@ -2,7 +2,7 @@ import { Reducer } from "react";
 import { ActionTypes, RestoplanActions } from "../actions/common";
 import { RestoplanProject } from "../models";
 
-export const projectsReducer: Reducer<RestoplanProject[], RestoplanActions> = (state: RestoplanProject[], action: RestoplanActions): RestoplanProject[] => {
+export const projectsReducer: Reducer<RestoplanProject[], RestoplanActions> = (state: RestoplanProject[] = [], action: RestoplanActions): RestoplanProject[] => {
     switch (action.type) {
         case ActionTypes.LOAD_RESTOPLAN_PROJECTS:
             state = [...action.payload];

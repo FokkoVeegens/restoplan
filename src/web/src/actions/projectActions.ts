@@ -22,7 +22,14 @@ export interface ProjectActions {
 const projectService = new ProjectService(config.api.baseUrl, '/projects');
 
 export const list = (options?: QueryOptions): ActionMethod<RestoplanProject[]> => async (dispatch: Dispatch<ListProjectsAction>) => {
-    const projects = await projectService.getList(options);
+    const serviceQueryOptions = options
+        ? {
+            skip: options.skip,
+            top: options.batchSize
+        }
+        : undefined;
+
+    const projects = await projectService.getList(serviceQueryOptions);
     dispatch(listProjectsAction(projects));
     return projects;
 }

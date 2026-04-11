@@ -23,7 +23,7 @@ export abstract class RestService<T extends Entity> {
     public async getList(queryOptions?: QueryOptions): Promise<T[]> {
         const response = await this.client.request<T[]>({
             method: 'GET',
-            data: queryOptions
+            params: queryOptions
         });
 
         return response.data;
