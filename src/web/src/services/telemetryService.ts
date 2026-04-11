@@ -1,6 +1,5 @@
 import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
-import { ApplicationInsights, Snippet, ITelemetryItem } from "@microsoft/applicationinsights-web";
-import { DistributedTracingModes } from "@microsoft/applicationinsights-common";
+import { ApplicationInsights, Snippet, ITelemetryItem, DistributedTracingModes } from "@microsoft/applicationinsights-web";
 import { createBrowserHistory } from 'history'
 import config from "../config";
 
