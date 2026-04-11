@@ -5,7 +5,7 @@ using Restoplan.Api;
 var credential = new DefaultAzureCredential();
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<ListsRepository>();
+builder.Services.AddSingleton<ProjectsRepository>();
 var cosmosEndpoint = builder.Configuration["AZURE_COSMOS_ENDPOINT"];
 var cosmosKey = builder.Configuration["AZURE_COSMOS_KEY"];
 var cosmosClientOptions = new CosmosClientOptions
@@ -44,8 +44,7 @@ for (var attempt = 1; attempt <= maxInitAttempts; attempt++)
     {
         await cosmosClient.CreateDatabaseIfNotExistsAsync(databaseName);
         var database = cosmosClient.GetDatabase(databaseName);
-        await database.CreateContainerIfNotExistsAsync("RestoplanList", "/id");
-        await database.CreateContainerIfNotExistsAsync("RestoplanItem", "/listId");
+        await database.CreateContainerIfNotExistsAsync("RestoplanProject", "/id");
         break;
     }
     catch (Exception) when (attempt < maxInitAttempts)
@@ -87,6 +86,6 @@ app.UseStaticFiles(new StaticFileOptions
     ServeUnknownFileTypes = true,
 });
 
-app.MapGroup("/lists")
+app.MapGroup("/projects")
     .MapRestoplanApi();
 app.Run();

@@ -1,13 +1,11 @@
-import { useEffect, useContext, useMemo, useState, Fragment } from 'react';
+import { useEffect, useContext, useMemo, Fragment, useState } from 'react';
 import { IconButton, IContextualMenuProps, IIconProps, Stack, Text, Shimmer, ShimmerElementType } from '@fluentui/react';
-import RestoplanItemListPane from '../components/restoplanItemListPane';
-import { RestoplanItem, RestoplanItemState } from '../models';
-import * as itemActions from '../actions/itemActions';
-import * as listActions from '../actions/listActions';
+import RestoplanProjectDetailPane from '../components/restoplanProjectDetailPane';
+import { RestoplanProject } from '../models';
+import * as projectActions from '../actions/projectActions';
 import { RestoplanContext } from '../components/restoplanContext';
 import { AppContext } from '../models/applicationState';
-import { ItemActions } from '../actions/itemActions';
-import { ListActions } from '../actions/listActions';
+import { ProjectActions } from '../actions/projectActions';
 import { stackItemPadding, stackPadding, titleStackStyles } from '../ux/styles';
 import { useNavigate, useParams } from 'react-router-dom';
 import { bindActionCreators } from '../actions/actionCreators';
@@ -16,80 +14,44 @@ import WithApplicationInsights from '../components/telemetryWithAppInsights.tsx'
 const HomePage = () => {
     const navigate = useNavigate();
     const appContext = useContext<AppContext>(RestoplanContext)
-    const { listId, itemId } = useParams();
+    const { projectId } = useParams();
     const actions = useMemo(() => ({
-        lists: bindActionCreators(listActions, appContext.dispatch) as unknown as ListActions,
-        items: bindActionCreators(itemActions, appContext.dispatch) as unknown as ItemActions,
+        projects: bindActionCreators(projectActions, appContext.dispatch) as unknown as ProjectActions,
     }), [appContext.dispatch]);
 
     const [isReady, setIsReady] = useState(false)
 
-    // Create default list of does not exist
+    // Select default project on initial load
     useEffect(() => {
-        if (appContext.state.lists?.length === 0) {
-            actions.lists.save({ name: 'My List' });
+        if (appContext.state.projects?.length && !projectId && !appContext.state.selectedProject) {
+            const defaultProject = appContext.state.projects[0];
+            navigate(`/projects/${defaultProject.id}`);
         }
-    }, [actions.lists, appContext.state.lists?.length])
+    }, [appContext.state.projects, appContext.state.selectedProject, projectId, navigate])
 
-    // Select default list on initial load
+    // React to selected project changes
     useEffect(() => {
-        if (appContext.state.lists?.length && !listId && !appContext.state.selectedList) {
-            const defaultList = appContext.state.lists[0];
-            navigate(`/lists/${defaultList.id}`);
+        if (projectId && appContext.state.selectedProject?.id !== projectId) {
+            actions.projects.load(projectId).then(() => setIsReady(true));
+        } else if (appContext.state.selectedProject) {
+            setIsReady(true);
         }
-    }, [appContext.state.lists, appContext.state.selectedList, listId, navigate])
+    }, [actions.projects, appContext.state.selectedProject, projectId])
 
-    // React to selected list changes
-    useEffect(() => {
-        if (listId && appContext.state.selectedList?.id !== listId) {
-            actions.lists.load(listId);
-        }
-    }, [actions.lists, appContext.state.selectedList, listId])
-
-    // React to selected item change
-    useEffect(() => {
-        if (listId && itemId && appContext.state.selectedItem?.id !== itemId) {
-            actions.items.load(listId, itemId);
-        }
-    }, [actions.items, appContext.state.selectedItem?.id, itemId, listId])
-
-    // Load items for selected list
-    useEffect(() => {
-        if (appContext.state.selectedList?.id && !appContext.state.selectedList.items) {
-            const loadListItems = async (listId: string) => {
-                await actions.items.list(listId);
-                setIsReady(true)
-            }
-
-            loadListItems(appContext.state.selectedList.id)
-        }
-    }, [actions.items, appContext.state.selectedList?.id, appContext.state.selectedList?.items])
-
-    const onItemCreated = async (item: RestoplanItem) => {
-        return await actions.items.save(item.listId, item);
+    const onProjectEdited = async (project: RestoplanProject) => {
+        await actions.projects.save(project);
     }
 
-    const onItemCompleted = (item: RestoplanItem) => {
-        item.state = RestoplanItemState.Done;
-        item.completedDate = new Date();
-        actions.items.save(item.listId, item);
-    }
-
-    const onItemSelected = (item?: RestoplanItem) => {
-        actions.items.select(item);
-    }
-
-    const onItemDeleted = (item: RestoplanItem) => {
-        if (item.id) {
-            actions.items.remove(item.listId, item);
-            navigate(`/lists/${item.listId}`);
+    const onCancel = () => {
+        if (projectId) {
+            actions.projects.load(projectId);
         }
     }
 
-    const deleteList = () => {
-        if (appContext.state.selectedList?.id) {
-            actions.lists.remove(appContext.state.selectedList.id);
-            navigate('/lists');
+    const deleteProject = () => {
+        if (appContext.state.selectedProject?.id) {
+            actions.projects.remove(appContext.state.selectedProject.id);
+            navigate('/projects');
         }
     }
 
@@ -106,9 +68,9 @@ const HomePage = () => {
         items: [
             {
                 key: 'delete',
-                text: 'Delete List',
+                text: 'Delete Project',
                 iconProps: { iconName: 'Delete' },
-                onClick: () => { deleteList() }
+                onClick: () => { deleteProject() }
             }
         ]
     }
@@ -119,15 +81,15 @@ const HomePage = () => {
                 <Stack horizontal styles={titleStackStyles} tokens={stackPadding}>
                     <Stack.Item grow={1}>
                         <Shimmer width={300}
-                            isDataLoaded={!!appContext.state.selectedList}
+                            isDataLoaded={!!appContext.state.selectedProject}
                             shimmerElements={
                                 [
                                     { type: ShimmerElementType.line, height: 20 }
                                 ]
                             } >
                             <Fragment>
-                                <Text block variant="xLarge">{appContext.state.selectedList?.name}</Text>
-                                <Text variant="small">{appContext.state.selectedList?.description}</Text>
+                                <Text block variant="xLarge">{appContext.state.selectedProject?.name}</Text>
+                                <Text variant="small">{appContext.state.selectedProject?.description}</Text>
                             </Fragment>
                         </Shimmer>
                     </Stack.Item>
@@ -137,21 +99,16 @@ const HomePage = () => {
                             menuProps={menuProps}
                             iconProps={iconProps}
                             styles={{ root: { fontSize: 16 } }}
-                            title="List Actions"
-                            ariaLabel="List Actions" />
+                            title="Project Actions"
+                            ariaLabel="Project Actions" />
                     </Stack.Item>
                 </Stack>
             </Stack.Item>
             <Stack.Item tokens={stackItemPadding}>
-                <RestoplanItemListPane
-                    list={appContext.state.selectedList}
-                    items={appContext.state.selectedList?.items}
-                    selectedItem={appContext.state.selectedItem}
-                    disabled={!isReady}
-                    onSelect={onItemSelected}
-                    onCreated={onItemCreated}
-                    onComplete={onItemCompleted}
-                    onDelete={onItemDeleted} />
+                <RestoplanProjectDetailPane
+                    project={appContext.state.selectedProject}
+                    onEdit={onProjectEdited}
+                    onCancel={onCancel} />
             </Stack.Item>
         </Stack >
     );

@@ -1,7 +1,6 @@
 import { Dispatch } from "react";
 import { RestoplanActions } from "../actions/common";
-import { RestoplanItem } from "./restoplanItem";
-import { RestoplanList } from "./restoplanList";
+import { RestoplanProject } from "./restoplanProject";
 
 export interface AppContext {
     state: ApplicationState
@@ -9,16 +8,14 @@ export interface AppContext {
 }
 
 export interface ApplicationState {
-    lists?: RestoplanList[]
-    selectedList?: RestoplanList
-    selectedItem?: RestoplanItem
+    projects?: RestoplanProject[]
+    selectedProject?: RestoplanProject
 }
 
 export const getDefaultState = (): ApplicationState => {
     return {
-        lists: undefined,
-        selectedList: undefined,
-        selectedItem: undefined
+        projects: undefined,
+        selectedProject: undefined,
     }
 }
 

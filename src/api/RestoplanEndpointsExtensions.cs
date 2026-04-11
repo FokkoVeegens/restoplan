@@ -6,159 +6,71 @@ namespace Restoplan.Api
     {
         public static RouteGroupBuilder MapRestoplanApi(this RouteGroupBuilder group)
         {
-            group.MapGet("/", GetLists);
-            group.MapPost("/", CreateList);
-            group.MapGet("/{listId}", GetList);
-            group.MapPut("/{listId}", UpdateList);
-            group.MapDelete("/{listId}", DeleteList);
-            group.MapGet("/{listId}/items", GetListItems);
-            group.MapPost("/{listId}/items", CreateListItem);
-            group.MapGet("/{listId}/items/{itemId}", GetListItem);
-            group.MapPut("/{listId}/items/{itemId}", UpdateListItem);
-            group.MapDelete("/{listId}/items/{itemId}", DeleteListItem);
-            group.MapGet("/{listId}/state/{state}", GetListItemsByState);
+            group.MapGet("/", GetProjects);
+            group.MapPost("/", CreateProject);
+            group.MapGet("/{projectId}", GetProject);
+            group.MapPut("/{projectId}", UpdateProject);
+            group.MapDelete("/{projectId}", DeleteProject);
             return group;
         }
 
-        public static async Task<Ok<IEnumerable<RestoplanList>>> GetLists(ListsRepository repository, int? skip = null, int? batchSize = null)
+        public static async Task<Ok<IEnumerable<RestoplanProject>>> GetProjects(ProjectsRepository repository, int? skip = null, int? batchSize = null)
         {
-            return TypedResults.Ok(await repository.GetListsAsync(skip, batchSize));
+            return TypedResults.Ok(await repository.GetProjectsAsync(skip, batchSize));
         }
 
-        public static async Task<IResult> CreateList(ListsRepository repository, CreateUpdateRestoplanList list)
+        public static async Task<IResult> CreateProject(ProjectsRepository repository, CreateUpdateRestoplanProject project)
         {
-            var RestoplanList = new RestoplanList(list.name)
+            var newProject = new RestoplanProject(project.name)
             {
-                Description = list.description
+                Description = project.description,
+                Brand = project.brand,
+                Type = project.type
             };
 
-            await repository.AddListAsync(RestoplanList);
+            await repository.AddProjectAsync(newProject);
 
-            return TypedResults.Created($"/lists/{RestoplanList.Id}", RestoplanList);
+            return TypedResults.Created($"/projects/{newProject.Id}", newProject);
         }
 
-        public static async Task<IResult> GetList(ListsRepository repository, string listId)
+        public static async Task<IResult> GetProject(ProjectsRepository repository, string projectId)
         {
-            var list = await repository.GetListAsync(listId);
+            var project = await repository.GetProjectAsync(projectId);
 
-            return list == null ? TypedResults.NotFound() : TypedResults.Ok(list);
+            return project == null ? TypedResults.NotFound() : TypedResults.Ok(project);
         }
 
-        public static async Task<IResult> UpdateList(ListsRepository repository, string listId, CreateUpdateRestoplanList list)
+        public static async Task<IResult> UpdateProject(ProjectsRepository repository, string projectId, CreateUpdateRestoplanProject project)
         {
-            var existingList = await repository.GetListAsync(listId);
-            if (existingList == null)
+            var existing = await repository.GetProjectAsync(projectId);
+            if (existing == null)
             {
                 return TypedResults.NotFound();
             }
 
-            existingList.Name = list.name;
-            existingList.Description = list.description;
-            existingList.UpdatedDate = DateTimeOffset.UtcNow;
+            existing.Name = project.name;
+            existing.Description = project.description;
+            existing.Brand = project.brand;
+            existing.Type = project.type;
+            existing.UpdatedDate = DateTimeOffset.UtcNow;
 
-            await repository.UpdateList(existingList);
+            await repository.UpdateProjectAsync(existing);
 
-            return TypedResults.Ok(existingList);
+            return TypedResults.Ok(existing);
         }
 
-        public static async Task<IResult> DeleteList(ListsRepository repository, string listId)
+        public static async Task<IResult> DeleteProject(ProjectsRepository repository, string projectId)
         {
-            if (await repository.GetListAsync(listId) == null)
+            if (await repository.GetProjectAsync(projectId) == null)
             {
                 return TypedResults.NotFound();
             }
 
-            await repository.DeleteListAsync(listId);
+            await repository.DeleteProjectAsync(projectId);
 
             return TypedResults.NoContent();
-        }
-
-        public static async Task<IResult> GetListItems(ListsRepository repository, string listId, int? skip = null, int? batchSize = null)
-        {
-            if (await repository.GetListAsync(listId) == null)
-            {
-                return TypedResults.NotFound();
-            }
-            return TypedResults.Ok(await repository.GetListItemsAsync(listId, skip, batchSize));
-        }
-
-        public static async Task<IResult> CreateListItem(ListsRepository repository, string listId, CreateUpdateRestoplanItem item)
-        {
-            if (await repository.GetListAsync(listId) == null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            var newItem = new RestoplanItem(listId, item.name)
-            {
-                Name = item.name,
-                Description = item.description,
-                State = item.state,
-                CreatedDate = DateTimeOffset.UtcNow,
-                StartDate = item.startDate
-            };
-
-            await repository.AddListItemAsync(newItem);
-
-            return TypedResults.Created($"/lists/{listId}/items{newItem.Id}", newItem);
-        }
-
-        public static async Task<IResult> GetListItem(ListsRepository repository, string listId, string itemId)
-        {
-            if (await repository.GetListAsync(listId) == null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            var item = await repository.GetListItemAsync(listId, itemId);
-
-            return item == null ? TypedResults.NotFound() : TypedResults.Ok(item);
-        }
-
-        public static async Task<IResult> UpdateListItem(ListsRepository repository, string listId, string itemId, CreateUpdateRestoplanItem item)
-        {
-            var existingItem = await repository.GetListItemAsync(listId, itemId);
-            if (existingItem == null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            existingItem.Name = item.name;
-            existingItem.Description = item.description;
-            existingItem.CompletedDate = item.completedDate;
-            existingItem.DueDate = item.dueDate;
-            existingItem.State = item.state;
-            existingItem.StartDate = item.startDate;
-            existingItem.UpdatedDate = DateTimeOffset.UtcNow;
-
-            await repository.UpdateListItem(existingItem);
-
-            return TypedResults.Ok(existingItem);
-        }
-
-        public static async Task<IResult> DeleteListItem(ListsRepository repository, string listId, string itemId)
-        {
-            if (await repository.GetListItemAsync(listId, itemId) == null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            await repository.DeleteListItemAsync(listId, itemId);
-
-            return TypedResults.NoContent();
-        }
-
-        public static async Task<IResult> GetListItemsByState(ListsRepository repository, string listId, string state, int? skip = null, int? batchSize = null)
-        {
-            if (await repository.GetListAsync(listId) == null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            return TypedResults.Ok(await repository.GetListItemsByStateAsync(listId, state, skip, batchSize));
         }
     }
 
-    public record CreateUpdateRestoplanList(string name, string? description = null);
-    public record CreateUpdateRestoplanItem(string name, string state, DateTimeOffset? dueDate, DateTimeOffset? completedDate, DateTimeOffset? startDate = null, string? description = null);
+    public record CreateUpdateRestoplanProject(string name, string? description = null, string? brand = null, string? type = null);
 }

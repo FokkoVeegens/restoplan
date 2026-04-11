@@ -1,20 +1,20 @@
 import { FC, ReactElement } from 'react';
-import RestoplanListMenu from '../components/restoplanListMenu';
-import { RestoplanList } from '../models/restoplanList';
+import RestoplanProjectMenu from '../components/restoplanProjectMenu';
+import { RestoplanProject } from '../models/restoplanProject';
 
 interface SidebarProps {
-    selectedList?: RestoplanList
-    lists?: RestoplanList[];
-    onListCreate: (list: RestoplanList) => void
+    selectedProject?: RestoplanProject
+    projects?: RestoplanProject[];
+    onProjectCreate: (project: RestoplanProject) => void
 }
 
 const Sidebar: FC<SidebarProps> = (props: SidebarProps): ReactElement => {
     return (
         <div>
-            <RestoplanListMenu
-                selectedList={props.selectedList}
-                lists={props.lists}
-                onCreate={props.onListCreate} />
+            <RestoplanProjectMenu
+                selectedProject={props.selectedProject}
+                projects={props.projects}
+                onCreate={props.onProjectCreate} />
         </div>
     );
 };

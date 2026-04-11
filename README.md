@@ -91,7 +91,7 @@ If you prefer to set up manually instead of using the setup script:
 1. Ensure the prerequisites as mentioned above are installed
 1. Install the Azure CLI extension for Visual Studio Code
 1. Clone this repository
-1. Start the Cosmos DB emulator: `. "C:\Program Files\Azure Cosmos DB Emulator\Microsoft.Azure.Cosmos.Emulator.exe" /EnableMongoDbEndpoint=4.0 /MongoPort=65200`
+1. Start the Cosmos DB emulator: `. "C:\Program Files\Azure Cosmos DB Emulator\Microsoft.Azure.Cosmos.Emulator.exe"`
 1. Wait until the browser pops up with the emulator UI (https://localhost:8081/_explorer/index.html)
 1. Ensure your `appsettings.Development.json` file looks like this (note the key is no longer present):
     ```json

@@ -37,7 +37,7 @@ try {
 } catch {
     Write-Host "❌ Cosmos DB Emulator is not running" -ForegroundColor Red
     Write-Host "🔧 Starting Cosmos DB Emulator..." -ForegroundColor Yellow
-    Start-Process "C:\Program Files\Azure Cosmos DB Emulator\Microsoft.Azure.Cosmos.Emulator.exe" -ArgumentList "/EnableMongoDbEndpoint=4.0", "/MongoPort=65200"
+    Start-Process "C:\Program Files\Azure Cosmos DB Emulator\Microsoft.Azure.Cosmos.Emulator.exe"
     Write-Host "⏳ Waiting for Cosmos DB Emulator to start (this may take 1-2 minutes)..." -ForegroundColor Yellow
     
     $timeout = 120 # 2 minutes
