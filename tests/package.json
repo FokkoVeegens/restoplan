@@ -2,6 +2,6 @@
     "devDependencies": {
         "@playwright/test": "^1.59.1",
         "dotenv": "^17.4.0",
-        "uuid": "^13.0.0"
+        "uuid": "^14.0.0"
     }
 }
