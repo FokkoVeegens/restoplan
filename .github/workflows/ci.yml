@@ -67,6 +67,8 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: src/web
+        env:
+          VITE_API_BASE_URL: http://localhost:3100
 
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v7
@@ -172,6 +174,8 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
         working-directory: tests
+        env:
+          REACT_APP_WEB_BASE_URL: http://localhost:3000
 
       - name: Upload Playwright report
         if: always()
