@@ -64,6 +64,7 @@ coverage/
 
 # Build
 build/
+publish/
 
 # Others
 env-config.js
