@@ -34,6 +34,18 @@ param apimSku string = 'Consumption'
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 
+@description('Microsoft Entra External ID tenant subdomain (e.g., "restoplan" resolves to restoplan.ciamlogin.com)')
+param externalIdTenantSubdomain string = ''
+
+@description('Microsoft Entra External ID tenant ID (GUID) used to build the authority URL')
+param externalIdTenantId string = ''
+
+@description('Microsoft Entra External ID SPA (frontend) application client ID')
+param spaClientId string = ''
+
+@description('Microsoft Entra External ID API (backend) application client ID')
+param apiClientId string = ''
+
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
@@ -207,3 +219,11 @@ output API_BASE_URL string = useAPIM ? apimApi.outputs.SERVICE_API_URI : api.out
 output REACT_APP_WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
 output USE_APIM bool = useAPIM
 output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []
+
+// Microsoft Entra External ID outputs (Phase 1: Multi-user auth)
+output EXTERNAL_ID_AUTHORITY string = !empty(externalIdTenantSubdomain) ? 'https://${externalIdTenantSubdomain}.ciamlogin.com/${externalIdTenantId}' : ''
+output EXTERNAL_ID_CIAM_DOMAIN string = !empty(externalIdTenantSubdomain) ? '${externalIdTenantSubdomain}.ciamlogin.com' : ''
+output EXTERNAL_ID_TENANT_ID string = externalIdTenantId
+output SPA_CLIENT_ID string = spaClientId
+output API_CLIENT_ID string = apiClientId
+output API_SCOPE string = !empty(apiClientId) ? 'api://${apiClientId}/access_as_user' : ''

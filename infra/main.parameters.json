@@ -16,6 +16,18 @@
     },
     "apimSku": {
       "value": "${APIM_SKU=Consumption}"
+    },
+    "externalIdTenantSubdomain": {
+      "value": "${EXTERNAL_ID_TENANT_SUBDOMAIN=}"
+    },
+    "externalIdTenantId": {
+      "value": "${EXTERNAL_ID_TENANT_ID=}"
+    },
+    "spaClientId": {
+      "value": "${SPA_CLIENT_ID=}"
+    },
+    "apiClientId": {
+      "value": "${API_CLIENT_ID=}"
     }
   }
 }

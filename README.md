@@ -233,7 +233,7 @@ At this point, you have a complete application deployed on Azure. But there is m
 
 - [Enable optional features, like APIM](./OPTIONAL_FEATURES.md) - for enhanced backend API protection and observability
 
-- [Phase 1: Multi-user auth with Microsoft Entra External ID](./docs/PHASE1_EXTERNAL_ID_SETUP.md) - set up social login (Google, Apple, Microsoft) as the foundation for per-user data isolation
+- [Phase 1: Multi-user auth with Microsoft Entra External ID](./docs/PHASE1_EXTERNAL_ID_SETUP.md) - set up sign-in with email one-time passcode (social providers like Google, Apple, and Microsoft can be added later) as the foundation for per-user data isolation
 
 ### Additional `azd` commands
 
