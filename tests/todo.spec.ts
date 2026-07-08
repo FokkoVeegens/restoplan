@@ -1,6 +1,20 @@
 import { test, expect } from "@playwright/test";
 import { v4 as uuidv4 } from "uuid";
 
+test.beforeAll(async () => {
+  // These UI tests run without sign-in (Phase 4 adds the authenticated flow).
+  // The API must be started with auth disabled, e.g.:
+  //   dotnet run --DisableAuth=true   (or set "DisableAuth": true in appsettings.Development.json)
+  // Fail fast with a clear message if the API is enforcing auth.
+  const apiBase = process.env.VITE_API_BASE_URL || "http://localhost:3100";
+  const response = await fetch(`${apiBase}/projects`);
+  if (response.status === 401) {
+    throw new Error(
+      `API at ${apiBase} requires authentication. Start it with DisableAuth=true for UI tests (see docs/PHASE2_API_AUTH.md).`
+    );
+  }
+});
+
 test("Create and delete project test", async ({ page }) => {
   await page.goto("/", { waitUntil: 'load' });
 

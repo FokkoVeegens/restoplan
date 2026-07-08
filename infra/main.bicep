@@ -87,6 +87,9 @@ module api './app/api.bicep' = {
       AZURE_COSMOS_DATABASE_NAME: cosmos.outputs.databaseName
       AZURE_COSMOS_ENDPOINT: cosmos.outputs.endpoint
       API_ALLOW_ORIGINS: web.outputs.SERVICE_WEB_URI
+      AzureAd__Instance: !empty(externalIdTenantSubdomain) ? 'https://${externalIdTenantSubdomain}.ciamlogin.com/' : ''
+      AzureAd__TenantId: externalIdTenantId
+      AzureAd__ClientId: externalIdApiClientId
     }
   }
 }

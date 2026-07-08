@@ -1,4 +1,6 @@
 using Azure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 using Microsoft.Azure.Cosmos;
 using Restoplan.Api;
 
@@ -6,6 +8,23 @@ var credential = new DefaultAzureCredential();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ProjectsRepository>();
+
+// Register authentication and authorization
+var disableAuth = builder.Configuration.GetValue<bool>("DisableAuth");
+if (!disableAuth)
+{
+    builder.Services
+        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("ApiScope", policy =>
+            policy.RequireAuthenticatedUser()
+                  .RequireClaim("http://schemas.microsoft.com/identity/claims/scope", "access_as_user"));
+    });
+}
+
 var cosmosEndpoint = builder.Configuration["AZURE_COSMOS_ENDPOINT"];
 var cosmosKey = builder.Configuration["AZURE_COSMOS_KEY"];
 var cosmosClientOptions = new CosmosClientOptions
@@ -68,10 +87,41 @@ var app = builder.Build();
 
 app.UseCors(policy =>
 {
-    policy.AllowAnyOrigin();
+    var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+    if (allowedOrigins != null && allowedOrigins.Length > 0)
+    {
+        foreach (var origin in allowedOrigins)
+        {
+            if (!string.IsNullOrWhiteSpace(origin))
+            {
+                policy.WithOrigins(origin);
+            }
+        }
+    }
+    else
+    {
+        // For Azure deployment, try to read from environment variable
+        var apiAllowOrigins = builder.Configuration["API_ALLOW_ORIGINS"];
+        if (!string.IsNullOrWhiteSpace(apiAllowOrigins))
+        {
+            policy.WithOrigins(apiAllowOrigins);
+        }
+        else
+        {
+            // Default for local development
+            policy.WithOrigins("http://localhost:5173", "http://localhost:3000");
+        }
+    }
     policy.AllowAnyHeader();
     policy.AllowAnyMethod();
+    policy.AllowCredentials();
 });
+
+if (!disableAuth)
+{
+    app.UseAuthentication();
+    app.UseAuthorization();
+}
 
 // Swagger UI
 app.UseSwaggerUI(options =>
@@ -86,6 +136,9 @@ app.UseStaticFiles(new StaticFileOptions
     ServeUnknownFileTypes = true,
 });
 
-app.MapGroup("/projects")
-    .MapRestoplanApi();
+var projects = app.MapGroup("/projects").MapRestoplanApi();
+if (!disableAuth)
+{
+    projects.RequireAuthorization("ApiScope");
+}
 app.Run();

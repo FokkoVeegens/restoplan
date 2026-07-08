@@ -129,6 +129,49 @@
                 "panel": "shared"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Test Phase 2 Auth (Automated)",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/tests/phase2-auth-tests.ps1"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "runOptions": {
+                "instanceLimit": 1,
+                "runOn": "folderOpen"
+            }
+        },
+        {
+            "label": "Test Phase 2 Auth (With Real Token)",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/tests/phase2-auth-tests.ps1",
+                "-UseRealToken"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": []
         }
     ]
 }

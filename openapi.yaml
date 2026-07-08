@@ -7,6 +7,15 @@ info:
     email: azdevteam@microsoft.com
 
 components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: 'https://restoplan.ciamlogin.com/restoplan-tenant-id/oauth2/v2.0/authorize'
+          tokenUrl: 'https://restoplan.ciamlogin.com/restoplan-tenant-id/oauth2/v2.0/token'
+          scopes:
+            'api://api-client-id/access_as_user': 'Access API as user'
   schemas:
     RestoplanItem:
       type: object
@@ -143,6 +152,9 @@ paths:
       summary: Gets An array of Restoplan lists
       tags:
         - Lists
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       parameters:
         - $ref: "#/components/parameters/top"
         - $ref: "#/components/parameters/skip"
@@ -154,6 +166,9 @@ paths:
       summary: Creates a new Restoplan list
       tags:
         - Lists
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       requestBody:
         $ref: "#/components/requestBodies/RestoplanList"
       responses:
@@ -167,6 +182,9 @@ paths:
       summary: Gets a Restoplan list by unique identifier
       tags:
         - Lists
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       parameters:
         - $ref: "#/components/parameters/listId"
       responses:
@@ -179,6 +197,9 @@ paths:
       summary: Updates a Restoplan list by unique identifier
       tags:
         - Lists
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       requestBody:
         $ref: "#/components/requestBodies/RestoplanList"
       parameters:
@@ -195,6 +216,9 @@ paths:
       summary: Deletes a Restoplan list by unique identifier
       tags:
         - Lists
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       parameters:
         - $ref: "#/components/parameters/listId"
       responses:
@@ -208,6 +232,9 @@ paths:
       summary: Creates a new Restoplan item within a list
       tags:
         - Items
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       requestBody:
         $ref: "#/components/requestBodies/RestoplanItem"
       parameters:
@@ -222,6 +249,9 @@ paths:
       summary: Gets Restoplan items within the specified list
       tags:
         - Items
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       parameters:
         - $ref: "#/components/parameters/listId"
         - $ref: "#/components/parameters/top"
@@ -237,6 +267,9 @@ paths:
       summary: Gets a Restoplan item by unique identifier
       tags:
         - Items
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       parameters:
         - $ref: "#/components/parameters/listId"
         - $ref: "#/components/parameters/itemId"
@@ -250,6 +283,9 @@ paths:
       summary: Updates a Restoplan item by unique identifier
       tags:
         - Items
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       requestBody:
         $ref: "#/components/requestBodies/RestoplanItem"
       parameters:
@@ -267,6 +303,9 @@ paths:
       summary: Deletes a Restoplan item by unique identifier
       tags:
         - Items
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       parameters:
         - $ref: "#/components/parameters/listId"
         - $ref: "#/components/parameters/itemId"
@@ -281,6 +320,9 @@ paths:
       summary: Gets a list of Restoplan items of a specific state
       tags:
         - Items
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       parameters:
         - $ref: "#/components/parameters/listId"
         - $ref: "#/components/parameters/state"
@@ -296,6 +338,9 @@ paths:
       summary: Changes the state of the specified list items
       tags:
         - Items
+      security:
+        - oauth2:
+            - 'api://api-client-id/access_as_user'
       requestBody:
         description: unique identifiers of the Restoplan items to update
         content:

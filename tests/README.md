@@ -27,3 +27,41 @@ npx playwright test --debug
 ```
 
 More debugging references: https://playwright.dev/docs/debug and https://playwright.dev/docs/trace-viewer
+
+## Phase 2: Authentication Tests
+
+Once Phase 2 (JWT Bearer authentication) is implemented, use the automated authentication tests:
+
+### Quick Start
+
+```powershell
+# Run all automated Phase 2 authentication tests
+./phase2-auth-tests.ps1
+
+# Or use VS Code task: Ctrl+Shift+P > "Tasks: Run Task" > "Test Phase 2 Auth (Automated)"
+```
+
+### Test Coverage
+
+The automated test suite validates:
+- ✅ Requests without token get `401 Unauthorized`
+- ✅ Invalid tokens are rejected
+- ✅ Swagger UI is accessible anonymously
+- ✅ CORS is properly enforced
+- ✅ Azure AD configuration is correct
+
+### Manual Token Testing
+
+For testing with real tokens from the External ID tenant:
+
+1. Start API: `dotnet run` from `src/api/`
+2. Open Swagger UI: `http://localhost:3100/`
+3. Click "Authorize" button and sign in with email OTP
+4. Use the acquired token to test endpoints:
+   ```bash
+   curl http://localhost:3100/projects \
+     -H "Authorization: Bearer <token>"
+   # Expect: 200 OK
+   ```
+
+See [Phase 2 Testing Guide](../docs/PHASE2_API_AUTH.md) for complete details.
